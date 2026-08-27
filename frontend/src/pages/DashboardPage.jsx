@@ -45,12 +45,32 @@ function DashboardPage() {
     );
   }, [filters]);
 
-  const handleFilterChange = (filterName, value) => {
-    setFilters((currentFilters) => ({
-      ...currentFilters,
-      value,
-    }));
-  };
+    const handleFilterChange = (filterName, value) => {
+    setFilters((currentFilters) => {
+        if (filterName === "financialYear") {
+        return {
+            ...currentFilters,
+            financialYear: value,
+        };
+        }
+
+        if (filterName === "district") {
+        return {
+            ...currentFilters,
+            district: value,
+        };
+        }
+
+        if (filterName === "scheme") {
+        return {
+            ...currentFilters,
+            scheme: value,
+        };
+        }
+
+        return currentFilters;
+    });
+    };
 
   const handleResetFilters = () => {
     setFilters(DEFAULT_FILTERS);
@@ -119,9 +139,7 @@ function DashboardPage() {
     <div className="dashboard-app">
       <div
         className={`sidebar-wrapper ${
-          sidebarOpen
-            ? "sidebar-wrapper-open"
-            : ""
+          sidebarOpen ? "sidebar-wrapper-open" : ""
         }`}
       >
         <Sidebar />

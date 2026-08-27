@@ -16,29 +16,53 @@ function DashboardFilters({
   onFilterChange,
   onReset,
 }) {
+  const handleFinancialYearChange = (event) => {
+    onFilterChange(
+      "financialYear",
+      event.target.value
+    );
+  };
+
+  const handleDistrictChange = (event) => {
+    onFilterChange(
+      "district",
+      event.target.value
+    );
+  };
+
+  const handleSchemeChange = (event) => {
+    onFilterChange(
+      "scheme",
+      event.target.value
+    );
+  };
+
   return (
     <section
       className="dashboard-filters"
       aria-label="Dashboard filters"
     >
       <div className="filter-field">
-        <CalendarRange size={17} />
+        <CalendarRange
+          size={17}
+          aria-hidden="true"
+        />
 
-        <label>
+        <label htmlFor="financial-year-filter">
           <span>Financial Year</span>
 
           <select
+            id="financial-year-filter"
+            name="financialYear"
             value={filters.financialYear}
-            onChange={(event) =>
-              onFilterChange(
-                "financialYear",
-                event.target.value
-              )
-            }
+            onChange={handleFinancialYearChange}
           >
-            {financialYears.map((year) => (
-              <option value={year} key={year}>
-                {year}
+            {financialYears.map((financialYear) => (
+              <option
+                value={financialYear}
+                key={financialYear}
+              >
+                {financialYear}
               </option>
             ))}
           </select>
@@ -46,22 +70,25 @@ function DashboardFilters({
       </div>
 
       <div className="filter-field">
-        <MapPin size={17} />
+        <MapPin
+          size={17}
+          aria-hidden="true"
+        />
 
-        <label>
+        <label htmlFor="district-filter">
           <span>District</span>
 
           <select
+            id="district-filter"
+            name="district"
             value={filters.district}
-            onChange={(event) =>
-              onFilterChange(
-                "district",
-                event.target.value
-              )
-            }
+            onChange={handleDistrictChange}
           >
             {districts.map((district) => (
-              <option value={district} key={district}>
+              <option
+                value={district}
+                key={district}
+              >
                 {district}
               </option>
             ))}
@@ -70,22 +97,25 @@ function DashboardFilters({
       </div>
 
       <div className="filter-field">
-        <Landmark size={17} />
+        <Landmark
+          size={17}
+          aria-hidden="true"
+        />
 
-        <label>
+        <label htmlFor="scheme-filter">
           <span>Scheme</span>
 
           <select
+            id="scheme-filter"
+            name="scheme"
             value={filters.scheme}
-            onChange={(event) =>
-              onFilterChange(
-                "scheme",
-                event.target.value
-              )
-            }
+            onChange={handleSchemeChange}
           >
             {schemes.map((scheme) => (
-              <option value={scheme} key={scheme}>
+              <option
+                value={scheme}
+                key={scheme}
+              >
                 {scheme}
               </option>
             ))}
@@ -97,12 +127,17 @@ function DashboardFilters({
         className="reset-filters-button"
         type="button"
         onClick={onReset}
+        aria-label="Reset dashboard filters"
       >
-        <RotateCcw size={16} />
-        Reset
+        <RotateCcw
+          size={16}
+          aria-hidden="true"
+        />
+
+        <span>Reset</span>
       </button>
     </section>
   );
 }
 
-export default DashboardFilters
+export default DashboardFilters;
