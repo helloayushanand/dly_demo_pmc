@@ -1,41 +1,41 @@
 import { useMemo, useState } from "react";
+
 import {
-  BadgeIndianRupee,
   BadgeCheck,
+  BadgeIndianRupee,
   FileText,
   MessageSquareText,
   Users,
   WalletCards,
 } from "lucide-react";
 
-import Sidebar from "../components/layout/Sidebar";
+import ApplicationStatusChart from "../components/charts/ApplicationStatusChart";
+import PaymentOverviewChart from "../components/charts/PaymentOverviewChart";
+import TopSchemesChart from "../components/charts/TopSchemesChart";
+import DashboardFilters from "../components/dashboard/DashboardFilters";
+import GrievanceOverview from "../components/dashboard/GrievanceOverview";
+import KpiCard from "../components/dashboard/KpiCard";
+import TransactionFlow from "../components/dashboard/TransactionFlow";
 import Header from "../components/layout/Header";
-import DashboardFilters from
-  "../components/dashboard/DashboardFilters";
-import KpiCard from
-  "../components/dashboard/KpiCard";
+import Sidebar from "../components/layout/Sidebar";
 
-import {
-  dashboardRecords,
-} from "../data/dashboardData";
+import { dashboardRecords } from "../data/dashboardData";
 
-import {
-  calculateDashboardData,
-} from "../utils/dashboardCalculations";
+import { calculateDashboardData } from "../utils/dashboardCalculations";
 
 import {
   formatCurrencyCompact,
   formatIndianNumber,
 } from "../utils/formatters";
 
-const defaultFilters = {
+const DEFAULT_FILTERS = {
   financialYear: "2024-25",
   district: "All Districts",
   scheme: "All Schemes",
 };
 
 function DashboardPage() {
-  const [filters, setFilters] = useState(defaultFilters);
+  const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const dashboardData = useMemo(() => {
@@ -53,7 +53,7 @@ function DashboardPage() {
   };
 
   const handleResetFilters = () => {
-    setFilters(defaultFilters);
+    setFilters(DEFAULT_FILTERS);
   };
 
   const { kpis } = dashboardData;
@@ -119,7 +119,9 @@ function DashboardPage() {
     <div className="dashboard-app">
       <div
         className={`sidebar-wrapper ${
-          sidebarOpen ? "sidebar-wrapper-open" : ""
+          sidebarOpen
+            ? "sidebar-wrapper-open"
+            : ""
         }`}
       >
         <Sidebar />
@@ -137,7 +139,9 @@ function DashboardPage() {
       <div className="dashboard-main">
         <Header
           onToggleSidebar={() =>
-            setSidebarOpen((current) => !current)
+            setSidebarOpen(
+              (currentValue) => !currentValue
+            )
           }
         />
 
@@ -145,6 +149,7 @@ function DashboardPage() {
           <section className="dashboard-heading-row">
             <div>
               <h1>Dashboard</h1>
+
               <p>
                 Welcome to the Integrated Beneficiary
                 Management System
@@ -162,6 +167,21 @@ function DashboardPage() {
             onReset={handleResetFilters}
           />
 
+          <section className="active-filter-summary">
+            <span>Showing data for:</span>
+
+            <strong>{filters.financialYear}</strong>
+            <strong>{filters.district}</strong>
+            <strong>{filters.scheme}</strong>
+
+            <span className="record-count">
+              {dashboardData.recordCount} aggregated{" "}
+              {dashboardData.recordCount === 1
+                ? "record"
+                : "records"}
+            </span>
+          </section>
+
           <section className="kpi-grid">
             {kpiCards.map((card) => (
               <KpiCard
@@ -171,49 +191,58 @@ function DashboardPage() {
             ))}
           </section>
 
-          <section className="dashboard-placeholder-grid">
-            <article className="content-card placeholder-card">
-              <div>
-                <span className="section-label">
-                  Applications Status
-                </span>
-                <h2>Application distribution</h2>
-              </div>
+          {dashboardData.hasData ? (
+            <>
+              <section className="primary-chart-grid">
+                <ApplicationStatusChart
+                  data={
+                    dashboardData.applicationStatus
+                  }
+                />
+
+                <TopSchemesChart
+                  data={dashboardData.topSchemes}
+                />
+
+                <PaymentOverviewChart
+                  data={dashboardData.paymentStatus}
+                  disbursedAmount={formatCurrencyCompact(
+                    kpis.totalAmountDisbursed
+                  )}
+                />
+              </section>
+
+              <section className="secondary-dashboard-grid">
+                <TransactionFlow
+                  data={
+                    dashboardData.transactionFlow
+                  }
+                />
+
+                <GrievanceOverview
+                  data={dashboardData.grievances}
+                />
+              </section>
+            </>
+          ) : (
+            <section className="content-card no-data-card">
+              <MessageSquareText size={28} />
+
+              <h2>No dashboard data available</h2>
 
               <p>
-                The application status doughnut chart will
-                appear here in the next step.
+                No records match the selected filters.
+                Reset the filters and try again.
               </p>
-            </article>
 
-            <article className="content-card placeholder-card">
-              <div>
-                <span className="section-label">
-                  Top Schemes
-                </span>
-                <h2>Beneficiaries by scheme</h2>
-              </div>
-
-              <p>
-                The top schemes bar chart will appear here
-                in the next step.
-              </p>
-            </article>
-
-            <article className="content-card placeholder-card">
-              <div>
-                <span className="section-label">
-                  Payment Overview
-                </span>
-                <h2>DBT payment status</h2>
-              </div>
-
-              <p>
-                The payment overview chart will appear here
-                in the next step.
-              </p>
-            </article>
-          </section>
+              <button
+                type="button"
+                onClick={handleResetFilters}
+              >
+                Reset dashboard filters
+              </button>
+            </section>
+          )}
         </main>
 
         <footer className="dashboard-footer">

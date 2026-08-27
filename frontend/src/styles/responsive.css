@@ -1,24 +1,54 @@
+@media (max-width: 1380px) {
+  .primary-chart-grid {
+    grid-template-columns:
+      minmax(270px, 1fr)
+      minmax(380px, 1.4fr);
+  }
+
+  .primary-chart-grid article:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .payment-donut-wrapper {
+    max-width: 360px;
+  }
+}
+
 @media (max-width: 1280px) {
   .kpi-grid {
-    grid-template-columns: repeat(3, minmax(170px, 1fr));
+    grid-template-columns: repeat(
+      3,
+      minmax(170px, 1fr)
+    );
+  }
+}
+
+@media (max-width: 1150px) {
+  .secondary-dashboard-grid {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 1050px) {
   .dashboard-filters {
-    grid-template-columns: repeat(2, minmax(180px, 1fr));
-  }
-
-  .dashboard-placeholder-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .dashboard-placeholder-grid article:last-child {
-    grid-column: 1 / -1;
+    grid-template-columns: repeat(
+      2,
+      minmax(180px, 1fr)
+    );
   }
 
   .current-date {
     display: none;
+  }
+}
+
+@media (max-width: 960px) {
+  .primary-chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .primary-chart-grid article:last-child {
+    grid-column: auto;
   }
 }
 
@@ -65,17 +95,25 @@
 
 @media (max-width: 680px) {
   .dashboard-heading-row {
+    align-items: flex-start;
     flex-direction: column;
   }
 
   .dashboard-filters,
   .kpi-grid,
-  .dashboard-placeholder-grid {
+  .primary-chart-grid,
+  .secondary-dashboard-grid {
     grid-template-columns: 1fr;
   }
 
-  .dashboard-placeholder-grid article:last-child {
-    grid-column: auto;
+  .active-filter-summary {
+    align-items: flex-start;
+    flex-direction: column;
+    white-space: normal;
+  }
+
+  .active-filter-summary .record-count {
+    margin-left: 0;
   }
 
   .admin-details {
@@ -84,5 +122,56 @@
 
   .kpi-card {
     min-height: 108px;
+  }
+
+  .application-chart-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-legend-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 10px 14px;
+  }
+
+  .payment-summary-list {
+    grid-template-columns: 1fr;
+  }
+
+  .transaction-flow {
+    justify-content: flex-start;
+    padding-bottom: 14px;
+    overflow-x: auto;
+  }
+
+  .flow-step {
+    flex: 0 0 72px;
+  }
+
+  .flow-arrow {
+    flex: 0 0 auto;
+  }
+
+  .grievance-metric-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .dashboard-content {
+    padding-inline: 12px;
+  }
+
+  .dashboard-header {
+    padding-inline: 10px;
+  }
+
+  .notification-button {
+    display: none;
+  }
+
+  .grievance-metric-grid,
+  .chart-legend-list {
+    grid-template-columns: 1fr;
   }
 }
