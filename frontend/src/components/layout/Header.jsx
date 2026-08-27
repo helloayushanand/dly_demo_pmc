@@ -2,17 +2,50 @@ import {
   Bell,
   CalendarDays,
   ChevronDown,
+  LogOut,
   Menu,
   UserRound,
 } from "lucide-react";
 
+import {
+  useState,
+} from "react";
+
+import {
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  useAuth,
+} from "../../context/AuthContext";
+
 function Header({ onToggleSidebar }) {
-  const formattedDate = new Intl.DateTimeFormat("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    weekday: "long",
-  }).format(new Date());
+  const navigate = useNavigate();
+
+  const {
+    admin,
+    logout,
+  } = useAuth();
+
+  const [profileMenuOpen, setProfileMenuOpen] =
+    useState(false);
+
+  const formattedDate = new Intl.DateTimeFormat(
+    "en-IN",
+    {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      weekday: "long",
+    }
+  ).format(new Date());
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", {
+      replace: true,
+    });
+  };
 
   return (
     <header className="dashboard-header">
@@ -29,14 +62,17 @@ function Header({ onToggleSidebar }) {
         <strong>
           Department of Social Welfare and Empowerment
         </strong>
-        <span>Integrated Beneficiary Management System</span>
+
+        <span>
+          Integrated Beneficiary Management System
+        </span>
       </div>
 
       <div className="header-actions">
         <div className="current-date">
           <CalendarDays size={17} />
+
           <span>{formattedDate}</span>
-          <ChevronDown size={15} />
         </div>
 
         <button
@@ -48,17 +84,64 @@ function Header({ onToggleSidebar }) {
           <span>3</span>
         </button>
 
-        <div className="admin-profile">
-          <div className="admin-avatar">
-            <UserRound size={20} />
-          </div>
+        <div className="admin-profile-wrapper">
+          <button
+            className="admin-profile"
+            type="button"
+            aria-expanded={profileMenuOpen}
+            aria-label="Open administrator menu"
+            onClick={() => {
+              setProfileMenuOpen(
+                (currentValue) => !currentValue
+              );
+            }}
+          >
+            <div className="admin-avatar">
+              <UserRound size={20} />
+            </div>
 
-          <div className="admin-details">
-            <strong>Admin User</strong>
-            <span>Administrator</span>
-          </div>
+            <div className="admin-details">
+              <strong>
+                {admin?.displayName || "Admin User"}
+              </strong>
 
-          <ChevronDown size={16} />
+              <span>
+                {admin?.role || "Administrator"}
+              </span>
+            </div>
+
+            <ChevronDown
+              className={
+                profileMenuOpen
+                  ? "profile-chevron-open"
+                  : ""
+              }
+              size={16}
+            />
+          </button>
+
+          {profileMenuOpen && (
+            <div className="admin-profile-menu">
+              <div className="profile-menu-identity">
+                <strong>
+                  {admin?.displayName || "Admin User"}
+                </strong>
+
+                <span>
+                  Signed in as{" "}
+                  {admin?.username || "admin"}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+              >
+                <LogOut size={16} />
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
