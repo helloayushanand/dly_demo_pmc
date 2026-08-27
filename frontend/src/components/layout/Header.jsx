@@ -57,7 +57,7 @@ function Header({ onToggleSidebar }) {
 
       <div className="header-title">
         <strong>
-          Department of Social Welfare and Empowerment
+          Department of Women and Child Development
         </strong>
 
         <span>

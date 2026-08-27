@@ -4,6 +4,7 @@ export const financialYears = [
   "2023-24",
   "2024-25",
   "2025-26",
+  "2026-27",
 ];
 
 export const districts = [
@@ -23,48 +24,150 @@ export const districts = [
 
 export const schemes = [
   "All Schemes",
-  "Maternal Assistance Scheme",
-  "Girl Child Education Support",
-  "Nutrition Support Programme",
-  "Women Livelihood Assistance",
-  "Child Care Assistance",
-  "Social Security Pension",
-  "Scholarship Support Scheme",
+  "Delhi Lakshmi Yojana",
+  "Delhi Lakhpati Bitiya Scheme",
+  "Delhi Ladli Scheme",
+  "Pradhan Mantri Matru Vandana Yojana (PMMVY)",
+  "Delhi Pension Scheme to Women in Distress",
+  "Widow's Daughter Marriage Scheme",
+  "Saksham Anganwadi and Poshan 2.0",
 ];
 
-const districtMultipliers = {
-  Central: 0.82,
-  East: 1.08,
-  "New Delhi": 0.64,
-  North: 1.12,
-  "North East": 1.18,
-  "North West": 1.25,
-  Shahdara: 0.88,
-  South: 1.16,
-  "South East": 1.02,
-  "South West": 0.96,
-  West: 1.21,
+/*
+ * District shares are synthetic but calibrated to create
+ * realistic Delhi-wide distribution patterns.
+ *
+ * All district shares add up to 1.00.
+ */
+
+const districtShares = {
+  Central: 0.07,
+  East: 0.1,
+  "New Delhi": 0.03,
+  North: 0.09,
+  "North East": 0.13,
+  "North West": 0.14,
+  Shahdara: 0.08,
+  South: 0.08,
+  "South East": 0.09,
+  "South West": 0.09,
+  West: 0.1,
 };
 
-const schemeMultipliers = {
-  "Maternal Assistance Scheme": 1.18,
-  "Girl Child Education Support": 1.12,
-  "Nutrition Support Programme": 1.25,
-  "Women Livelihood Assistance": 0.92,
-  "Child Care Assistance": 1.05,
-  "Social Security Pension": 0.84,
-  "Scholarship Support Scheme": 0.78,
+/*
+ * FY 2026-27 planning-scale scheme profiles.
+ *
+ * These figures are synthetic prototype estimates calibrated
+ * against publicly available programme scope and benefit rates.
+ *
+ * The values must not be presented as official live statistics.
+ */
+
+const schemeProfiles = {
+  "Delhi Lakshmi Yojana": {
+    launchFinancialYear: "2026-27",
+    targetBeneficiaries: 1_700_000,
+    targetApplications: 2_050_000,
+    annualSanctionedAmount: 51_000_000_000,
+    disbursementRatio: 0.42,
+    approvalRate: 0.58,
+    rejectionRate: 0.1,
+    grievanceRate: 0.012,
+  },
+
+  "Delhi Lakhpati Bitiya Scheme": {
+    launchFinancialYear: "2026-27",
+    targetBeneficiaries: 140_000,
+    targetApplications: 172_000,
+    annualSanctionedAmount: 1_280_000_000,
+    disbursementRatio: 0.38,
+    approvalRate: 0.61,
+    rejectionRate: 0.08,
+    grievanceRate: 0.013,
+  },
+
+  "Delhi Ladli Scheme": {
+    launchFinancialYear: "2022-23",
+    targetBeneficiaries: 185_000,
+    targetApplications: 230_000,
+    annualSanctionedAmount: 3_330_000_000,
+    disbursementRatio: 0.76,
+    approvalRate: 0.68,
+    rejectionRate: 0.07,
+    grievanceRate: 0.015,
+  },
+
+  "Pradhan Mantri Matru Vandana Yojana (PMMVY)": {
+    launchFinancialYear: "2022-23",
+    targetBeneficiaries: 95_000,
+    targetApplications: 118_000,
+    annualSanctionedAmount: 522_500_000,
+    disbursementRatio: 0.81,
+    approvalRate: 0.72,
+    rejectionRate: 0.06,
+    grievanceRate: 0.014,
+  },
+
+  "Delhi Pension Scheme to Women in Distress": {
+    launchFinancialYear: "2022-23",
+    targetBeneficiaries: 350_000,
+    targetApplications: 382_000,
+    annualSanctionedAmount: 10_500_000_000,
+    disbursementRatio: 0.89,
+    approvalRate: 0.79,
+    rejectionRate: 0.05,
+    grievanceRate: 0.018,
+  },
+
+  "Widow's Daughter Marriage Scheme": {
+    launchFinancialYear: "2022-23",
+    targetBeneficiaries: 12_000,
+    targetApplications: 16_500,
+    annualSanctionedAmount: 360_000_000,
+    disbursementRatio: 0.84,
+    approvalRate: 0.66,
+    rejectionRate: 0.09,
+    grievanceRate: 0.017,
+  },
+
+  "Saksham Anganwadi and Poshan 2.0": {
+    launchFinancialYear: "2022-23",
+    targetBeneficiaries: 850_000,
+    targetApplications: 925_000,
+    annualSanctionedAmount: 4_250_000_000,
+    disbursementRatio: 0.83,
+    approvalRate: 0.82,
+    rejectionRate: 0.03,
+    grievanceRate: 0.009,
+  },
 };
 
-const yearMultipliers = {
+/*
+ * Historical factors create a plausible year-on-year trend.
+ *
+ * A scheme is excluded from any financial year before its
+ * configured launch financial year.
+ */
+
+const financialYearFactors = {
   "2022-23": 0.78,
-  "2023-24": 0.89,
-  "2024-25": 1,
-  "2025-26": 1.08,
+  "2023-24": 0.84,
+  "2024-25": 0.9,
+  "2025-26": 0.95,
+  "2026-27": 1,
+};
+
+const financialYearOrder = {
+  "2022-23": 1,
+  "2023-24": 2,
+  "2024-25": 3,
+  "2025-26": 4,
+  "2026-27": 5,
 };
 
 const activeFinancialYears = financialYears.filter(
-  (year) => year !== "All Financial Years"
+  (financialYear) =>
+    financialYear !== "All Financial Years"
 );
 
 const activeDistricts = districts.filter(
@@ -75,105 +178,344 @@ const activeSchemes = schemes.filter(
   (scheme) => scheme !== "All Schemes"
 );
 
+const isSchemeAvailable = (
+  financialYear,
+  launchFinancialYear
+) => {
+  return (
+    financialYearOrder[financialYear] >=
+    financialYearOrder[launchFinancialYear]
+  );
+};
+
+/*
+ * Distributes an integer total across all districts.
+ *
+ * The final district receives the remaining balance so the
+ * district values always add up exactly to the original total.
+ */
+
+const distributeIntegerAcrossDistricts = (
+  totalValue
+) => {
+  let allocatedValue = 0;
+
+  return activeDistricts.reduce(
+    (distribution, district, index) => {
+      const isLastDistrict =
+        index === activeDistricts.length - 1;
+
+      const districtValue = isLastDistrict
+        ? totalValue - allocatedValue
+        : Math.round(
+            totalValue * districtShares[district]
+          );
+
+      distribution[district] = Math.max(
+        districtValue,
+        0
+      );
+
+      allocatedValue += districtValue;
+
+      return distribution;
+    },
+    {}
+  );
+};
+
+/*
+ * Monetary distribution uses the same district weighting.
+ *
+ * The final district receives any rounding balance so the
+ * distributed amounts equal the original programme total.
+ */
+
+const distributeMoneyAcrossDistricts = (
+  totalValue
+) => {
+  let allocatedValue = 0;
+
+  return activeDistricts.reduce(
+    (distribution, district, index) => {
+      const isLastDistrict =
+        index === activeDistricts.length - 1;
+
+      const districtValue = isLastDistrict
+        ? totalValue - allocatedValue
+        : Math.round(
+            totalValue * districtShares[district]
+          );
+
+      distribution[district] = Math.max(
+        districtValue,
+        0
+      );
+
+      allocatedValue += districtValue;
+
+      return distribution;
+    },
+    {}
+  );
+};
+
+const calculateApplicationStatus = (
+  applications,
+  profile
+) => {
+  const approved = Math.round(
+    applications * profile.approvalRate
+  );
+
+  const rejected = Math.round(
+    applications * profile.rejectionRate
+  );
+
+  const received = Math.round(
+    applications * 0.08
+  );
+
+  const underVerification = Math.round(
+    applications * 0.1
+  );
+
+  const sanctioned = Math.round(
+    applications * 0.08
+  );
+
+  const disbursed = Math.max(
+    applications -
+      approved -
+      rejected -
+      received -
+      underVerification -
+      sanctioned,
+    0
+  );
+
+  return {
+    received,
+    underVerification,
+    approved,
+    sanctioned,
+    rejected,
+    disbursed,
+  };
+};
+
+const calculatePaymentStatus = (
+  disbursedApplications,
+  disbursementRatio
+) => {
+  const baseSuccessRate =
+    0.91 + disbursementRatio * 0.05;
+
+  const successful = Math.min(
+    Math.round(
+      disbursedApplications * baseSuccessRate
+    ),
+    disbursedApplications
+  );
+
+  const failed = Math.min(
+    Math.round(disbursedApplications * 0.025),
+    Math.max(
+      disbursedApplications - successful,
+      0
+    )
+  );
+
+  const pending = Math.max(
+    disbursedApplications -
+      successful -
+      failed,
+    0
+  );
+
+  return {
+    successful,
+    failed,
+    pending,
+  };
+};
+
+const calculateGrievances = (
+  applications,
+  grievanceRate
+) => {
+  const total = Math.round(
+    applications * grievanceRate
+  );
+
+  const open = Math.round(total * 0.17);
+
+  const inProgress = Math.round(
+    total * 0.23
+  );
+
+  const resolved = Math.max(
+    total - open - inProgress,
+    0
+  );
+
+  return {
+    total,
+    open,
+    inProgress,
+    resolved,
+  };
+};
+
+/*
+ * Produces one aggregate record for every valid combination
+ * of financial year, scheme, and district.
+ */
+
 const createDashboardRecords = () => {
   const records = [];
   let recordId = 1;
 
-  activeFinancialYears.forEach((financialYear, yearIndex) => {
-    activeDistricts.forEach((district, districtIndex) => {
-      activeSchemes.forEach((scheme, schemeIndex) => {
-        const baseValue =
-          760 +
-          districtIndex * 43 +
-          schemeIndex * 31 +
-          yearIndex * 54;
+  activeFinancialYears.forEach(
+    (financialYear) => {
+      const financialYearFactor =
+        financialYearFactors[financialYear];
 
-        const weightedValue = Math.round(
-          baseValue *
-            districtMultipliers[district] *
-            schemeMultipliers[scheme] *
-            yearMultipliers[financialYear]
+      activeSchemes.forEach((scheme) => {
+        const profile = schemeProfiles[scheme];
+
+        if (
+          !isSchemeAvailable(
+            financialYear,
+            profile.launchFinancialYear
+          )
+        ) {
+          return;
+        }
+
+        const yearlyBeneficiaries = Math.round(
+          profile.targetBeneficiaries *
+            financialYearFactor
         );
 
-        const beneficiaries = weightedValue;
-        const applications = Math.round(beneficiaries * 1.31);
-        const received = Math.round(applications * 0.11);
-        const underVerification = Math.round(applications * 0.09);
-        const approved = Math.round(applications * 0.44);
-        const sanctioned = Math.round(applications * 0.16);
-        const rejected = Math.round(applications * 0.08);
-
-        const disbursed = Math.max(
-          applications -
-            received -
-            underVerification -
-            approved -
-            sanctioned -
-            rejected,
-          0
+        const yearlyApplications = Math.round(
+          profile.targetApplications *
+            financialYearFactor
         );
 
-        const averageSanctionAmount =
-          4200 + schemeIndex * 750 + districtIndex * 95;
-
-        const sanctionedAmount =
-          (approved + sanctioned + disbursed) * averageSanctionAmount;
-
-        const disbursedAmount = Math.round(
-          sanctionedAmount * (0.81 + (districtIndex % 5) * 0.025)
+        const yearlySanctionedAmount = Math.round(
+          profile.annualSanctionedAmount *
+            financialYearFactor
         );
 
-        const successfulPayments = Math.round(disbursed * 0.91);
-        const failedPayments = Math.round(disbursed * 0.055);
-        const pendingPayments = Math.max(
-          disbursed - successfulPayments - failedPayments,
-          0
+        const yearlyDisbursedAmount = Math.round(
+          yearlySanctionedAmount *
+            profile.disbursementRatio
         );
 
-        const totalGrievances = Math.round(applications * 0.035);
-        const openGrievances = Math.round(totalGrievances * 0.19);
-        const inProgressGrievances = Math.round(totalGrievances * 0.26);
-        const resolvedGrievances = Math.max(
-          totalGrievances - openGrievances - inProgressGrievances,
-          0
-        );
+        const beneficiaryDistribution =
+          distributeIntegerAcrossDistricts(
+            yearlyBeneficiaries
+          );
 
-        records.push({
-          id: recordId,
-          financialYear,
-          district,
-          scheme,
-          beneficiaries,
-          applications,
-          applicationStatus: {
-            received,
-            underVerification,
-            approved,
-            sanctioned,
-            rejected,
-            disbursed,
-          },
-          sanctionedAmount,
-          disbursedAmount,
-          paymentStatus: {
-            successful: successfulPayments,
-            failed: failedPayments,
-            pending: pendingPayments,
-          },
-          grievances: {
-            total: totalGrievances,
-            open: openGrievances,
-            inProgress: inProgressGrievances,
-            resolved: resolvedGrievances,
-          },
+        const applicationDistribution =
+          distributeIntegerAcrossDistricts(
+            yearlyApplications
+          );
+
+        const sanctionedAmountDistribution =
+          distributeMoneyAcrossDistricts(
+            yearlySanctionedAmount
+          );
+
+        const disbursedAmountDistribution =
+          distributeMoneyAcrossDistricts(
+            yearlyDisbursedAmount
+          );
+
+        activeDistricts.forEach((district) => {
+          const beneficiaries =
+            beneficiaryDistribution[district];
+
+          const applications =
+            applicationDistribution[district];
+
+          const applicationStatus =
+            calculateApplicationStatus(
+              applications,
+              profile
+            );
+
+          const paymentStatus =
+            calculatePaymentStatus(
+              applicationStatus.disbursed,
+              profile.disbursementRatio
+            );
+
+          const grievances =
+            calculateGrievances(
+              applications,
+              profile.grievanceRate
+            );
+
+          records.push({
+            id: recordId,
+            financialYear,
+            district,
+            scheme,
+            beneficiaries,
+            applications,
+
+            applicationStatus: {
+              received:
+                applicationStatus.received,
+              underVerification:
+                applicationStatus.underVerification,
+              approved:
+                applicationStatus.approved,
+              sanctioned:
+                applicationStatus.sanctioned,
+              rejected:
+                applicationStatus.rejected,
+              disbursed:
+                applicationStatus.disbursed,
+            },
+
+            sanctionedAmount:
+              sanctionedAmountDistribution[district],
+
+            disbursedAmount:
+              disbursedAmountDistribution[district],
+
+            paymentStatus: {
+              successful:
+                paymentStatus.successful,
+              failed:
+                paymentStatus.failed,
+              pending:
+                paymentStatus.pending,
+            },
+
+            grievances: {
+              total:
+                grievances.total,
+              open:
+                grievances.open,
+              inProgress:
+                grievances.inProgress,
+              resolved:
+                grievances.resolved,
+            },
+          });
+
+          recordId += 1;
         });
-
-        recordId += 1;
       });
-    });
-  });
+    }
+  );
 
   return records;
 };
 
-export const dashboardRecords = createDashboardRecords();
+export const dashboardRecords =
+  createDashboardRecords();

@@ -86,7 +86,7 @@ function Sidebar({ onNavigate }) {
 
         <div className="brand-copy">
           <strong>Beneficiary Portal</strong>
-          <span>Government Services</span>
+          <span>Government of NCT of Delhi</span>
         </div>
       </div>
 

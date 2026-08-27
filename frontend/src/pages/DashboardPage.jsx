@@ -18,6 +18,7 @@ import KpiCard from "../components/dashboard/KpiCard";
 import TransactionFlow from "../components/dashboard/TransactionFlow";
 
 import { dashboardRecords } from "../data/dashboardData";
+
 import { calculateDashboardData } from "../utils/dashboardCalculations";
 
 import {
@@ -26,7 +27,7 @@ import {
 } from "../utils/formatters";
 
 const DEFAULT_FILTERS = {
-  financialYear: "2024-25",
+  financialYear: "2026-27",
   district: "All Districts",
   scheme: "All Schemes",
 };
@@ -149,7 +150,7 @@ function DashboardPage() {
         </div>
 
         <div className="prototype-badge">
-          P0 Prototype
+          Prototype
         </div>
       </section>
 

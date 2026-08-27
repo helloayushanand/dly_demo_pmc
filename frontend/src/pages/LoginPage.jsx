@@ -103,12 +103,11 @@ function LoginPage() {
 
             <div>
               <strong>
-                Department of Social Welfare and
-                Empowerment
+                Department of Women and Child Development
               </strong>
 
               <span>
-                Government Services Administration
+                Government of NCT of Delhi
               </span>
             </div>
           </div>
@@ -212,7 +211,7 @@ function LoginPage() {
 
             <div>
               <strong>Beneficiary Portal</strong>
-              <span>Government Services</span>
+              <span>Government of NCT of Delhi</span>
             </div>
           </div>
 
