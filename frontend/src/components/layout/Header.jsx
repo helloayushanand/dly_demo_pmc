@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
   Bell,
   CalendarDays,
@@ -7,25 +9,13 @@ import {
   UserRound,
 } from "lucide-react";
 
-import {
-  useState,
-} from "react";
+import { useNavigate } from "react-router-dom";
 
-import {
-  useNavigate,
-} from "react-router-dom";
-
-import {
-  useAuth,
-} from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 function Header({ onToggleSidebar }) {
   const navigate = useNavigate();
-
-  const {
-    admin,
-    logout,
-  } = useAuth();
+  const { admin, logout } = useAuth();
 
   const [profileMenuOpen, setProfileMenuOpen] =
     useState(false);
@@ -42,9 +32,16 @@ function Header({ onToggleSidebar }) {
 
   const handleLogout = () => {
     logout();
+
     navigate("/login", {
       replace: true,
     });
+  };
+
+  const handleToggleProfileMenu = () => {
+    setProfileMenuOpen(
+      (currentValue) => !currentValue
+    );
   };
 
   return (
@@ -52,7 +49,7 @@ function Header({ onToggleSidebar }) {
       <button
         className="mobile-menu-button"
         type="button"
-        aria-label="Toggle navigation"
+        aria-label="Open navigation menu"
         onClick={onToggleSidebar}
       >
         <Menu size={22} />
@@ -70,7 +67,10 @@ function Header({ onToggleSidebar }) {
 
       <div className="header-actions">
         <div className="current-date">
-          <CalendarDays size={17} />
+          <CalendarDays
+            size={17}
+            aria-hidden="true"
+          />
 
           <span>{formattedDate}</span>
         </div>
@@ -78,9 +78,13 @@ function Header({ onToggleSidebar }) {
         <button
           className="notification-button"
           type="button"
-          aria-label="Notifications"
+          aria-label="View notifications"
         >
-          <Bell size={20} />
+          <Bell
+            size={20}
+            aria-hidden="true"
+          />
+
           <span>3</span>
         </button>
 
@@ -88,16 +92,15 @@ function Header({ onToggleSidebar }) {
           <button
             className="admin-profile"
             type="button"
-            aria-expanded={profileMenuOpen}
             aria-label="Open administrator menu"
-            onClick={() => {
-              setProfileMenuOpen(
-                (currentValue) => !currentValue
-              );
-            }}
+            aria-expanded={profileMenuOpen}
+            onClick={handleToggleProfileMenu}
           >
             <div className="admin-avatar">
-              <UserRound size={20} />
+              <UserRound
+                size={20}
+                aria-hidden="true"
+              />
             </div>
 
             <div className="admin-details">
@@ -111,12 +114,13 @@ function Header({ onToggleSidebar }) {
             </div>
 
             <ChevronDown
+              size={16}
+              aria-hidden="true"
               className={
                 profileMenuOpen
                   ? "profile-chevron-open"
                   : ""
               }
-              size={16}
             />
           </button>
 
@@ -137,7 +141,11 @@ function Header({ onToggleSidebar }) {
                 type="button"
                 onClick={handleLogout}
               >
-                <LogOut size={16} />
+                <LogOut
+                  size={16}
+                  aria-hidden="true"
+                />
+
                 Sign out
               </button>
             </div>

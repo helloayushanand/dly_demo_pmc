@@ -1,79 +1,86 @@
 import {
-  LayoutDashboard,
-  Users,
-  Landmark,
-  FileText,
   BadgeCheck,
-  WalletCards,
   ChartNoAxesCombined,
-  MessageSquareText,
-  UserCog,
-  Settings,
   ClipboardList,
+  FileText,
   Headphones,
+  Landmark,
+  LayoutDashboard,
+  MessageSquareText,
+  Settings,
+  UserCog,
+  Users,
+  WalletCards,
 } from "lucide-react";
 
-const navigationItems = [
+import { NavLink } from "react-router-dom";
+
+const NAVIGATION_ITEMS = [
   {
     label: "Dashboard",
+    path: "/dashboard",
     icon: LayoutDashboard,
-    active: true,
   },
   {
     label: "Beneficiaries",
+    path: "/beneficiaries",
     icon: Users,
   },
   {
     label: "Schemes",
+    path: "/schemes",
     icon: Landmark,
   },
   {
     label: "Applications",
+    path: "/applications",
     icon: FileText,
   },
   {
     label: "Approvals & Sanctions",
+    path: "/approvals",
     icon: BadgeCheck,
   },
   {
     label: "DBT Monitoring",
+    path: "/dbt-monitoring",
     icon: WalletCards,
   },
   {
     label: "Reports & Analytics",
+    path: "/reports",
     icon: ChartNoAxesCombined,
   },
   {
     label: "Grievances",
+    path: "/grievances",
     icon: MessageSquareText,
   },
   {
     label: "User Management",
+    path: "/users",
     icon: UserCog,
   },
   {
     label: "System Settings",
+    path: "/settings",
     icon: Settings,
   },
   {
     label: "Audit Trail",
+    path: "/audit-trail",
     icon: ClipboardList,
   },
 ];
 
-function Sidebar() {
-  const handleNavigation = (label) => {
-    if (label !== "Dashboard") {
-      window.alert(
-        `${label} is not included in the current P0 prototype.`
-      );
-    }
-  };
-
+function Sidebar({ onNavigate }) {
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <div className="brand-symbol" aria-hidden="true">
+        <div
+          className="brand-symbol"
+          aria-hidden="true"
+        >
           IB
         </div>
 
@@ -87,33 +94,60 @@ function Sidebar() {
         className="sidebar-navigation"
         aria-label="Main navigation"
       >
-        {navigationItems.map((item) => {
+        {NAVIGATION_ITEMS.map((item) => {
           const Icon = item.icon;
 
           return (
-            <button
-              className={`navigation-item ${
-                item.active ? "navigation-item-active" : ""
-              }`}
-              key={item.label}
-              onClick={() => handleNavigation(item.label)}
-              type="button"
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) => {
+                return [
+                  "navigation-item",
+                  isActive
+                    ? "navigation-item-active"
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ");
+              }}
+              onClick={() => {
+                if (typeof onNavigate === "function") {
+                  onNavigate();
+                }
+              }}
             >
-              <Icon size={18} strokeWidth={1.9} />
+              <Icon
+                size={18}
+                strokeWidth={1.9}
+                aria-hidden="true"
+              />
+
               <span>{item.label}</span>
-            </button>
+            </NavLink>
           );
         })}
       </nav>
 
-      <div className="support-card">
-        <div className="support-icon">
-          <Headphones size={21} />
-        </div>
+      <div className="sidebar-support-section">
+        <div className="support-card">
+          <div className="support-icon">
+            <Headphones
+              size={21}
+              aria-hidden="true"
+            />
+          </div>
 
-        <div>
-          <strong>Need help?</strong>
-          <button type="button">Contact Support</button>
+          <div className="support-copy">
+            <strong>Need help?</strong>
+
+            <a
+              href="mailto:support@example.gov.in"
+              aria-label="Contact support by email"
+            >
+              Contact Support
+            </a>
+          </div>
         </div>
       </div>
     </aside>

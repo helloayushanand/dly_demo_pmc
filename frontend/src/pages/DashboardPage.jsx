@@ -16,11 +16,8 @@ import DashboardFilters from "../components/dashboard/DashboardFilters";
 import GrievanceOverview from "../components/dashboard/GrievanceOverview";
 import KpiCard from "../components/dashboard/KpiCard";
 import TransactionFlow from "../components/dashboard/TransactionFlow";
-import Header from "../components/layout/Header";
-import Sidebar from "../components/layout/Sidebar";
 
 import { dashboardRecords } from "../data/dashboardData";
-
 import { calculateDashboardData } from "../utils/dashboardCalculations";
 
 import {
@@ -35,8 +32,9 @@ const DEFAULT_FILTERS = {
 };
 
 function DashboardPage() {
-  const [filters, setFilters] = useState(DEFAULT_FILTERS);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [filters, setFilters] = useState(
+    DEFAULT_FILTERS
+  );
 
   const dashboardData = useMemo(() => {
     return calculateDashboardData(
@@ -45,32 +43,35 @@ function DashboardPage() {
     );
   }, [filters]);
 
-    const handleFilterChange = (filterName, value) => {
+  const handleFilterChange = (
+    filterName,
+    value
+  ) => {
     setFilters((currentFilters) => {
-        if (filterName === "financialYear") {
+      if (filterName === "financialYear") {
         return {
-            ...currentFilters,
-            financialYear: value,
+          ...currentFilters,
+          financialYear: value,
         };
-        }
+      }
 
-        if (filterName === "district") {
+      if (filterName === "district") {
         return {
-            ...currentFilters,
-            district: value,
+          ...currentFilters,
+          district: value,
         };
-        }
+      }
 
-        if (filterName === "scheme") {
+      if (filterName === "scheme") {
         return {
-            ...currentFilters,
-            scheme: value,
+          ...currentFilters,
+          scheme: value,
         };
-        }
+      }
 
-        return currentFilters;
+      return currentFilters;
     });
-    };
+  };
 
   const handleResetFilters = () => {
     setFilters(DEFAULT_FILTERS);
@@ -136,138 +137,103 @@ function DashboardPage() {
   ];
 
   return (
-    <div className="dashboard-app">
-      <div
-        className={`sidebar-wrapper ${
-          sidebarOpen ? "sidebar-wrapper-open" : ""
-        }`}
-      >
-        <Sidebar />
-      </div>
+    <div className="dashboard-page">
+      <section className="dashboard-heading-row">
+        <div>
+          <h1>Dashboard</h1>
 
-      {sidebarOpen && (
-        <button
-          className="sidebar-overlay"
-          type="button"
-          aria-label="Close navigation"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+          <p>
+            Welcome to the Integrated Beneficiary
+            Management System
+          </p>
+        </div>
 
-      <div className="dashboard-main">
-        <Header
-          onToggleSidebar={() =>
-            setSidebarOpen(
-              (currentValue) => !currentValue
-            )
-          }
-        />
+        <div className="prototype-badge">
+          P0 Prototype
+        </div>
+      </section>
 
-        <main className="dashboard-content">
-          <section className="dashboard-heading-row">
-            <div>
-              <h1>Dashboard</h1>
+      <DashboardFilters
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onReset={handleResetFilters}
+      />
 
-              <p>
-                Welcome to the Integrated Beneficiary
-                Management System
-              </p>
-            </div>
+      <section className="active-filter-summary">
+        <span>Showing data for:</span>
 
-            <div className="prototype-badge">
-              P0 Prototype
-            </div>
+        <strong>{filters.financialYear}</strong>
+        <strong>{filters.district}</strong>
+        <strong>{filters.scheme}</strong>
+
+        <span className="record-count">
+          {dashboardData.recordCount} aggregated{" "}
+          {dashboardData.recordCount === 1
+            ? "record"
+            : "records"}
+        </span>
+      </section>
+
+      <section className="kpi-grid">
+        {kpiCards.map((card) => (
+          <KpiCard
+            key={card.title}
+            {...card}
+          />
+        ))}
+      </section>
+
+      {dashboardData.hasData ? (
+        <>
+          <section className="primary-chart-grid">
+            <ApplicationStatusChart
+              data={dashboardData.applicationStatus}
+            />
+
+            <TopSchemesChart
+              data={dashboardData.topSchemes}
+            />
+
+            <PaymentOverviewChart
+              data={dashboardData.paymentStatus}
+              disbursedAmount={formatCurrencyCompact(
+                kpis.totalAmountDisbursed
+              )}
+            />
           </section>
 
-          <DashboardFilters
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            onReset={handleResetFilters}
+          <section className="secondary-dashboard-grid">
+            <TransactionFlow
+              data={dashboardData.transactionFlow}
+            />
+
+            <GrievanceOverview
+              data={dashboardData.grievances}
+            />
+          </section>
+        </>
+      ) : (
+        <section className="content-card no-data-card">
+          <MessageSquareText
+            size={28}
+            aria-hidden="true"
           />
 
-          <section className="active-filter-summary">
-            <span>Showing data for:</span>
+          <h2>No dashboard data available</h2>
 
-            <strong>{filters.financialYear}</strong>
-            <strong>{filters.district}</strong>
-            <strong>{filters.scheme}</strong>
+          <p>
+            No records match the selected filters. Reset
+            the filters and try again.
+          </p>
 
-            <span className="record-count">
-              {dashboardData.recordCount} aggregated{" "}
-              {dashboardData.recordCount === 1
-                ? "record"
-                : "records"}
-            </span>
-          </section>
-
-          <section className="kpi-grid">
-            {kpiCards.map((card) => (
-              <KpiCard
-                key={card.title}
-                {...card}
-              />
-            ))}
-          </section>
-
-          {dashboardData.hasData ? (
-            <>
-              <section className="primary-chart-grid">
-                <ApplicationStatusChart
-                  data={
-                    dashboardData.applicationStatus
-                  }
-                />
-
-                <TopSchemesChart
-                  data={dashboardData.topSchemes}
-                />
-
-                <PaymentOverviewChart
-                  data={dashboardData.paymentStatus}
-                  disbursedAmount={formatCurrencyCompact(
-                    kpis.totalAmountDisbursed
-                  )}
-                />
-              </section>
-
-              <section className="secondary-dashboard-grid">
-                <TransactionFlow
-                  data={
-                    dashboardData.transactionFlow
-                  }
-                />
-
-                <GrievanceOverview
-                  data={dashboardData.grievances}
-                />
-              </section>
-            </>
-          ) : (
-            <section className="content-card no-data-card">
-              <MessageSquareText size={28} />
-
-              <h2>No dashboard data available</h2>
-
-              <p>
-                No records match the selected filters.
-                Reset the filters and try again.
-              </p>
-
-              <button
-                type="button"
-                onClick={handleResetFilters}
-              >
-                Reset dashboard filters
-              </button>
-            </section>
-          )}
-        </main>
-
-        <footer className="dashboard-footer">
-          © 2026 Integrated Beneficiary Management System.
-          Prototype demonstration.
-        </footer>
-      </div>
+          <button
+            type="button"
+            onClick={handleResetFilters}
+          >
+            Reset dashboard filters
+          </button>
+        </section>
+      )}
     </div>
   );
 }
