@@ -1,155 +1,40 @@
 import {
-  BadgeCheck,
-  ChartNoAxesCombined,
-  ClipboardList,
-  FileText,
   Headphones,
-  Landmark,
-  LayoutDashboard,
-  MessageSquareText,
-  Settings,
-  UserCog,
-  Users,
-  WalletCards,
+  Mail,
 } from "lucide-react";
 
-import { NavLink } from "react-router-dom";
-
-const NAVIGATION_ITEMS = [
-  {
-    label: "Dashboard",
-    path: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    label: "Beneficiaries",
-    path: "/beneficiaries",
-    icon: Users,
-  },
-  {
-    label: "Schemes",
-    path: "/schemes",
-    icon: Landmark,
-  },
-  {
-    label: "Applications",
-    path: "/applications",
-    icon: FileText,
-  },
-  {
-    label: "Approvals & Sanctions",
-    path: "/approvals",
-    icon: BadgeCheck,
-  },
-  {
-    label: "DBT Monitoring",
-    path: "/dbt-monitoring",
-    icon: WalletCards,
-  },
-  {
-    label: "Reports & Analytics",
-    path: "/reports",
-    icon: ChartNoAxesCombined,
-  },
-  {
-    label: "Grievances",
-    path: "/grievances",
-    icon: MessageSquareText,
-  },
-  {
-    label: "User Management",
-    path: "/users",
-    icon: UserCog,
-  },
-  {
-    label: "System Settings",
-    path: "/settings",
-    icon: Settings,
-  },
-  {
-    label: "Audit Trail",
-    path: "/audit-trail",
-    icon: ClipboardList,
-  },
-];
-
-function Sidebar({ onNavigate }) {
+function Sidebar() {
   return (
-    <aside className="sidebar">
-      <div className="sidebar-brand">
-        <div
-          className="brand-symbol"
-          aria-hidden="true"
-        >
-          IB
-        </div>
-
-        <div className="brand-copy">
-          <strong>Beneficiary Portal</strong>
-          <span>Government of NCT of Delhi</span>
-        </div>
-      </div>
-
-      <nav
-        className="sidebar-navigation"
-        aria-label="Main navigation"
+    <aside
+      className="floating-support"
+      aria-label="Support"
+    >
+      <a
+        className="floating-support-button"
+        href="mailto:support@example.gov.in"
+        aria-label="Contact support by email"
       >
-        {NAVIGATION_ITEMS.map((item) => {
-          const Icon = item.icon;
+        <span className="floating-support-icon">
+          <Headphones
+            size={22}
+            strokeWidth={2}
+            aria-hidden="true"
+          />
+        </span>
 
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) => {
-                return [
-                  "navigation-item",
-                  isActive
-                    ? "navigation-item-active"
-                    : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ");
-              }}
-              onClick={() => {
-                if (typeof onNavigate === "function") {
-                  onNavigate();
-                }
-              }}
-            >
-              <Icon
-                size={18}
-                strokeWidth={1.9}
-                aria-hidden="true"
-              />
+        <span className="floating-support-copy">
+          <strong>Need help?</strong>
 
-              <span>{item.label}</span>
-            </NavLink>
-          );
-        })}
-      </nav>
-
-      <div className="sidebar-support-section">
-        <div className="support-card">
-          <div className="support-icon">
-            <Headphones
-              size={21}
+          <span>
+            <Mail
+              size={13}
               aria-hidden="true"
             />
-          </div>
 
-          <div className="support-copy">
-            <strong>Need help?</strong>
-
-            <a
-              href="mailto:support@example.gov.in"
-              aria-label="Contact support by email"
-            >
-              Contact Support
-            </a>
-          </div>
-        </div>
-      </div>
+            Contact Support
+          </span>
+        </span>
+      </a>
     </aside>
   );
 }

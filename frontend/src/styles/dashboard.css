@@ -2534,3 +2534,124 @@
     display: none;
   }
 }
+
+/* =========================================================
+   Full-width dashboard and floating support
+   ========================================================= */
+
+.floating-support {
+  position: fixed;
+  z-index: 120;
+  right: 22px;
+  bottom: 22px;
+  width: auto;
+  height: auto;
+  pointer-events: none;
+}
+
+.floating-support-button {
+  display: flex;
+  min-width: 190px;
+  min-height: 62px;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 14px 10px 10px;
+  color: #172033;
+  text-decoration: none;
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.98
+  );
+  border: 1px solid #d6e0ef;
+  border-radius: 16px;
+  box-shadow:
+    0 16px 38px rgba(16, 24, 40, 0.16),
+    0 4px 12px rgba(21, 94, 239, 0.08);
+  pointer-events: auto;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.floating-support-button:hover {
+  color: #172033;
+  text-decoration: none;
+  border-color: #84adff;
+  box-shadow:
+    0 20px 44px rgba(16, 24, 40, 0.2),
+    0 5px 14px rgba(21, 94, 239, 0.14);
+  transform: translateY(-3px);
+}
+
+.floating-support-button:focus-visible {
+  outline: 3px solid
+    rgba(21, 94, 239, 0.25);
+  outline-offset: 3px;
+}
+
+.floating-support-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #155eef;
+  background: linear-gradient(
+    135deg,
+    #eff4ff,
+    #dbe8ff
+  );
+  border: 1px solid #c7d7fe;
+  border-radius: 12px;
+}
+
+.floating-support-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.floating-support-copy strong {
+  color: #172033;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.floating-support-copy > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+  color: #155eef;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.floating-support-copy svg {
+  flex: 0 0 auto;
+}
+
+/*
+ * The dashboard becomes full width after the
+ * navigation sidebar is removed.
+ */
+.dashboard-main {
+  width: 100%;
+  margin-left: 0;
+}
+
+/*
+ * Neutralise any existing sidebar wrapper left
+ * behind by the parent layout.
+ */
+.sidebar-wrapper {
+  position: static;
+  z-index: auto;
+  width: 0;
+  height: 0;
+  background: transparent;
+  border: 0;
+}
