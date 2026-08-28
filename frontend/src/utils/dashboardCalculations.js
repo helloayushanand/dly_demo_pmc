@@ -63,10 +63,6 @@ const getVisibleMonthCount = (dateRange) => {
     return 3;
   }
 
-  /*
-   * The prototype currently contains data only
-   * from April through August.
-   */
   return 5;
 };
 
@@ -85,8 +81,7 @@ export const filterDashboardRecords = (
     .map(enrichDashboardRecord)
     .filter((record) => {
       const matchesFinancialYear =
-        financialYear ===
-          "All Financial Years" ||
+        financialYear === "All Financial Years" ||
         record.financialYear === financialYear;
 
       const matchesDistrict =
@@ -98,8 +93,8 @@ export const filterDashboardRecords = (
         record.scheme === scheme;
 
       const matchesBeneficiaryCategory =
-        beneficiaryCategory ===
-          "All Categories" ||
+        !beneficiaryCategory ||
+        beneficiaryCategory === "All Categories" ||
         record.beneficiaryCategory ===
           beneficiaryCategory;
 
@@ -269,9 +264,7 @@ export const calculateGrievances = (
 
   const inProgress = sum(
     records,
-    (record) => {
-      return record.grievances.inProgress;
-    }
+    (record) => record.grievances.inProgress
   );
 
   const resolved = sum(
@@ -384,15 +377,17 @@ export const calculateDbtTrend = (
       : 0;
 
   /*
-   * The annual aggregate is converted into an
-   * April-to-August prototype reporting period.
+   * The source records contain annual aggregate
+   * amounts. For the prototype, 42 percent of the
+   * annual sanctioned amount is treated as released
+   * from April through August.
    */
   const sanctionedTillAugust =
     totalSanctionedAmount * 0.42;
 
   /*
-   * Disbursement must always remain below the
-   * amount sanctioned through August.
+   * Disbursed funds cannot exceed the amount
+   * sanctioned through August.
    */
   const disbursedTillAugust = Math.min(
     totalDisbursedAmount,
@@ -400,8 +395,8 @@ export const calculateDbtTrend = (
   );
 
   /*
-   * Returned or rejected funds are calculated
-   * from the failed-payment ratio.
+   * Returned or rejected funds are calculated using
+   * the failed-payment ratio.
    */
   const returnedTillAugust = Math.min(
     disbursedTillAugust * failureRate,
@@ -539,13 +534,6 @@ export const calculateSchemeHealth = (
           totals.applications
         : 0;
 
-    /*
-     * Composite score:
-     *
-     * Fund utilisation: 50%
-     * Payment success: 30%
-     * Application approval: 20%
-     */
     const healthScore =
       utilisationRate * 0.5 +
       paymentSuccessRate * 0.3 +
@@ -553,6 +541,7 @@ export const calculateSchemeHealth = (
 
     return {
       scheme,
+
       status: "Needs Review",
 
       utilisationRate: Number(
@@ -579,14 +568,6 @@ export const calculateSchemeHealth = (
     };
   });
 
-  /*
-   * Rank schemes against other schemes currently
-   * visible on the dashboard.
-   *
-   * This is appropriate for the prototype because
-   * the source data is synthetic and the aim is to
-   * show a useful spread of monitoring statuses.
-   */
   const rankedSchemes = [
     ...schemeStatuses,
   ].sort((firstScheme, secondScheme) => {
@@ -601,8 +582,8 @@ export const calculateSchemeHealth = (
   rankedSchemes.forEach(
     (schemeStatus, index) => {
       /*
-       * A single selected scheme should retain a
-       * score-based status instead of using ranking.
+       * If one scheme is selected, classify the
+       * scheme directly using its health score.
        */
       if (totalSchemes === 1) {
         if (schemeStatus.healthScore >= 75) {
@@ -624,8 +605,8 @@ export const calculateSchemeHealth = (
       }
 
       /*
-       * Two or three visible schemes use compact
-       * relative bands.
+       * For two or three visible schemes, use
+       * compact relative performance bands.
        */
       if (totalSchemes <= 3) {
         if (index === 0) {
@@ -646,8 +627,8 @@ export const calculateSchemeHealth = (
        * For four or more schemes:
        *
        * Highest-ranked scheme: Completed
-       * Next roughly 45%: On Track
-       * Next roughly 30%: Needs Review
+       * Middle-high schemes: On Track
+       * Middle-low schemes: Needs Review
        * Lowest-ranked scheme: Critical
        */
       const completedCount = 1;
@@ -678,10 +659,6 @@ export const calculateSchemeHealth = (
     }
   );
 
-  /*
-   * Restore the original scheme order for any
-   * downstream components that display scheme lists.
-   */
   const statusByScheme = rankedSchemes.reduce(
     (statuses, schemeStatus) => {
       statuses[schemeStatus.scheme] =
@@ -696,6 +673,7 @@ export const calculateSchemeHealth = (
     schemeStatuses.map((schemeStatus) => {
       return {
         ...schemeStatus,
+
         status:
           statusByScheme[schemeStatus.scheme],
       };
@@ -743,6 +721,76 @@ export const calculateSchemeHealth = (
   };
 };
 
+export const calculateFundUtilisation = (
+  records
+) => {
+  const schemeTotals = records.reduce(
+    (totals, record) => {
+      const schemeName = record.scheme;
+
+      if (!totals[schemeName]) {
+        totals[schemeName] = {
+          sanctionedAmount: 0,
+          disbursedAmount: 0,
+        };
+      }
+
+      totals[schemeName].sanctionedAmount +=
+        record.sanctionedAmount;
+
+      totals[schemeName].disbursedAmount +=
+        record.disbursedAmount;
+
+      return totals;
+    },
+    {}
+  );
+
+  return Object.entries(schemeTotals)
+    .map(([scheme, totals]) => {
+      const safeDisbursedAmount = Math.min(
+        totals.disbursedAmount,
+        totals.sanctionedAmount
+      );
+
+      const utilisationRate =
+        totals.sanctionedAmount > 0
+          ? (
+              safeDisbursedAmount /
+              totals.sanctionedAmount
+            ) * 100
+          : 0;
+
+      const balanceAmount = Math.max(
+        totals.sanctionedAmount -
+          safeDisbursedAmount,
+        0
+      );
+
+      return {
+        scheme,
+
+        sanctionedAmount:
+          totals.sanctionedAmount,
+
+        disbursedAmount:
+          safeDisbursedAmount,
+
+        balanceAmount,
+
+        utilisationRate: Number(
+          utilisationRate.toFixed(1)
+        ),
+      };
+    })
+    .sort((firstScheme, secondScheme) => {
+      return (
+        secondScheme.utilisationRate -
+        firstScheme.utilisationRate
+      );
+    });
+};
+
 export const calculateDashboardData = (
   records,
   filters
@@ -788,5 +836,10 @@ export const calculateDashboardData = (
     schemeHealth: calculateSchemeHealth(
       filteredRecords
     ),
+
+    fundUtilisation:
+      calculateFundUtilisation(
+        filteredRecords
+      ),
   };
 };

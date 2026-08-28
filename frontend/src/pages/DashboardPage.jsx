@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 
+import FundUtilisation from "../components/dashboard/FundUtilisation";
 import SchemeHealthChart from "../components/charts/SchemeHealthChart";
 
 import ApplicationStatusChart from "../components/charts/ApplicationStatusChart";
@@ -448,14 +449,19 @@ function DashboardPage() {
             />
 
             <SchemeHealthChart
-              data={
-                dashboardData.schemeHealth.statusData
-              }
+              data={dashboardData.schemeHealth.statusData}
               totalSchemes={
                 dashboardData.schemeHealth.totalSchemes
               }
             />
           </section>
+
+          <FundUtilisation
+            data={dashboardData.fundUtilisation}
+          />
+
+          <section className="primary-chart-grid"></section>
+
             <section className="primary-chart-grid">
               <ApplicationStatusChart
                 data={

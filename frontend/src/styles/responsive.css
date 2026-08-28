@@ -676,3 +676,54 @@
     height: 205px;
   }
 }
+
+/* =========================================================
+   Scheme-wise fund utilisation
+   ========================================================= */
+
+@media (max-width: 1050px) {
+  .fund-utilisation-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .fund-utilisation-card {
+    padding: 14px;
+  }
+
+  .fund-utilisation-heading {
+    gap: 12px;
+  }
+
+  .fund-utilisation-item-heading {
+    flex-direction: column;
+  }
+
+  .fund-utilisation-result {
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+  }
+
+  .fund-utilisation-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .fund-utilisation-legend {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .fund-utilisation-heading-icon {
+    display: none;
+  }
+
+  .fund-scheme-details strong {
+    white-space: normal;
+  }
+}
