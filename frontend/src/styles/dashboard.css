@@ -2798,3 +2798,263 @@
 .profile-menu-identity span {
   color: #667085;
 }
+
+/* Dashboard text readability improvements */
+
+.dashboard-page p {
+  color: #475467;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.dashboard-heading-row p {
+  color: #475467;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.dbt-trend-heading p,
+.scheme-health-heading p,
+.fund-utilisation-heading p,
+.alerts-panel-heading p,
+.district-map-heading p,
+.accessible-table-heading p {
+  color: #475467;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.section-label {
+  color: #155eef;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.monitoring-alert-content p {
+  color: #475467;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.monitoring-alert-scheme {
+  color: #155eef;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.monitoring-alert-footer {
+  color: #667085;
+  font-size: 8px;
+}
+
+.monitoring-alert-footer span:last-child {
+  color: #344054;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.fund-scheme-details span {
+  color: #475467;
+  font-size: 9px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.fund-utilisation-meta span {
+  color: #475467;
+  font-size: 8px;
+  font-weight: 500;
+}
+
+.fund-utilisation-meta strong {
+  color: #1d2939;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.fund-status-badge {
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.scheme-health-legend-item div span {
+  color: #475467;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.scheme-health-legend-item strong {
+  color: #1d2939;
+  font-size: 11px;
+}
+
+.chart-legend-item strong {
+  color: #344054;
+  font-size: 9px;
+}
+
+.chart-legend-item span {
+  color: #667085;
+  font-size: 8px;
+}
+
+.payment-summary-item strong {
+  color: #344054;
+  font-size: 9px;
+}
+
+.payment-summary-item span {
+  color: #667085;
+  font-size: 8px;
+}
+
+.payment-amount-strip span {
+  color: #475467;
+  font-size: 9px;
+}
+
+.payment-amount-strip strong {
+  font-size: 11px;
+}
+
+.flow-step strong {
+  color: #344054;
+  font-size: 9px;
+}
+
+.flow-step span {
+  color: #667085;
+  font-size: 9px;
+}
+
+.transaction-progress-heading {
+  color: #475467;
+  font-size: 10px;
+}
+
+.transaction-meta {
+  color: #667085;
+  font-size: 9px;
+}
+
+.grievance-metric-heading span {
+  color: #475467;
+  font-size: 8px;
+  font-weight: 600;
+}
+
+.resolution-heading span {
+  color: #475467;
+  font-size: 9px;
+}
+
+.resolution-section p {
+  color: #667085;
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.filter-field label > span {
+  color: #475467;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.filter-field select {
+  color: #172033;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.active-filter-summary {
+  color: #475467;
+  font-size: 10px;
+}
+
+.active-filter-summary strong {
+  color: #344054;
+  font-size: 10px;
+}
+
+.active-filter-summary .record-count {
+  color: #344054;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.kpi-title {
+  color: #475467;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.kpi-trend {
+  font-size: 9px;
+}
+
+.kpi-trend span {
+  color: #667085;
+}
+
+.district-map-selection,
+.district-map-legend {
+  color: #475467;
+  font-size: 9px;
+}
+
+.district-map-accessible-list > span {
+  color: #475467;
+  font-size: 9px;
+}
+
+.district-map-accessible-list button {
+  color: #344054;
+  font-size: 9px;
+}
+
+.accessible-dashboard-table th,
+.accessible-dashboard-table td {
+  color: #344054;
+  font-size: 10px;
+}
+
+.accessible-dashboard-table th {
+  color: #1d2939;
+  font-weight: 800;
+}
+
+.module-page-heading p {
+  color: #475467;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.module-capability-item span {
+  color: #475467;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.module-development-message p {
+  color: #475467;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.dashboard-header .header-title span {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 10px;
+}
+
+.dashboard-header .admin-details span {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 9px;
+}
+
+.admin-profile-menu .profile-menu-identity span {
+  color: #475467;
+  font-size: 10px;
+}
