@@ -628,3 +628,51 @@
     min-width: 185px;
   }
 }
+
+/* =========================================================
+   Scheme health and monitoring row
+   ========================================================= */
+
+@media (max-width: 1180px) {
+  .dashboard-monitoring-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .scheme-health-heading p {
+    max-width: 520px;
+  }
+
+  .scheme-health-chart-wrapper {
+    max-width: 400px;
+    margin-inline: auto;
+  }
+
+  .scheme-health-legend {
+    max-width: 600px;
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .scheme-health-card {
+    padding: 14px;
+  }
+
+  .scheme-health-heading {
+    flex-direction: column;
+  }
+
+  .scheme-health-chart-wrapper {
+    height: 215px;
+  }
+}
+
+@media (max-width: 420px) {
+  .scheme-health-legend {
+    grid-template-columns: 1fr;
+  }
+
+  .scheme-health-chart-wrapper {
+    height: 205px;
+  }
+}

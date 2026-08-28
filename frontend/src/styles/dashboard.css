@@ -834,7 +834,7 @@
 
 .dbt-trend-card {
   min-width: 0;
-  margin-bottom: 14px;
+  margin-bottom: 0;
   padding: 18px;
 }
 
@@ -1791,4 +1791,197 @@
   font-size: 10px;
   font-weight: 600;
   line-height: 1.5;
+}
+
+
+/* Dashboard monitoring row */
+
+.dashboard-monitoring-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(560px, 1.85fr)
+    minmax(280px, 0.75fr);
+  gap: 14px;
+  align-items: stretch;
+  margin-bottom: 14px;
+}
+
+/* Scheme health */
+
+.scheme-health-card {
+  min-width: 0;
+  padding: 18px;
+}
+
+.scheme-health-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.scheme-health-heading h2 {
+  margin: 6px 0 0;
+  color: #173f7a;
+  font-size: 15px;
+}
+
+.scheme-health-heading h2::before {
+  display: inline-block;
+  width: 3px;
+  height: 18px;
+  margin-right: 9px;
+  vertical-align: -4px;
+  background-color: #f36c2d;
+  border-radius: 999px;
+  content: "";
+}
+
+.scheme-health-heading p {
+  max-width: 250px;
+  margin: 7px 0 0;
+  color: #7c8eae;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.scheme-health-live-badge {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  color: #067647;
+  font-size: 8px;
+  font-weight: 750;
+  white-space: nowrap;
+  background-color: #ecfdf3;
+  border: 1px solid #abefc6;
+  border-radius: 999px;
+}
+
+.scheme-health-chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 225px;
+  margin-top: 6px;
+}
+
+.scheme-health-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  flex-direction: column;
+}
+
+.scheme-health-center strong {
+  color: #173f7a;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.scheme-health-center span {
+  margin-top: 6px;
+  color: #667085;
+  font-size: 8px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.scheme-health-legend {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.scheme-health-legend-item {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background-color: #f8fafc;
+  border: 1px solid #eef2f6;
+  border-radius: 8px;
+}
+
+.scheme-health-status-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.scheme-health-legend-item div {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+.scheme-health-legend-item div span {
+  overflow: hidden;
+  color: #667085;
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scheme-health-legend-item strong {
+  color: #344054;
+  font-size: 10px;
+}
+
+.scheme-health-tooltip {
+  display: flex;
+  min-width: 145px;
+  align-items: center;
+  gap: 9px;
+  padding: 11px;
+  background-color: #173f7a;
+  border-radius: 8px;
+  box-shadow: 0 12px 30px
+    rgba(16, 24, 40, 0.2);
+}
+
+.scheme-health-tooltip-dot {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border: 2px solid
+    rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+}
+
+.scheme-health-tooltip div:last-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.scheme-health-tooltip span {
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.scheme-health-tooltip strong {
+  margin-top: 3px;
+  color: #ffd600;
+  font-size: 8px;
+}
+
+@media print {
+  .dashboard-monitoring-grid {
+    grid-template-columns: 2fr 1fr;
+    break-inside: avoid;
+  }
+
+  .scheme-health-card {
+    break-inside: avoid;
+  }
 }

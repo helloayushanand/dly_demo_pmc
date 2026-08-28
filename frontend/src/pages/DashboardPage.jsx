@@ -9,6 +9,9 @@ import {
   WalletCards,
 } from "lucide-react";
 
+
+import SchemeHealthChart from "../components/charts/SchemeHealthChart";
+
 import ApplicationStatusChart from "../components/charts/ApplicationStatusChart";
 import DbtDisbursementTrend from "../components/charts/DbtDisbursementTrend";
 import PaymentOverviewChart from "../components/charts/PaymentOverviewChart";
@@ -437,12 +440,22 @@ function DashboardPage() {
           </section>
         ) : (
           <>
+          <section className="dashboard-monitoring-grid">
             <DbtDisbursementTrend
               data={dashboardData.dbtTrend}
               financialYear={filters.financialYear}
               dateRange={filters.dateRange}
             />
 
+            <SchemeHealthChart
+              data={
+                dashboardData.schemeHealth.statusData
+              }
+              totalSchemes={
+                dashboardData.schemeHealth.totalSchemes
+              }
+            />
+          </section>
             <section className="primary-chart-grid">
               <ApplicationStatusChart
                 data={

@@ -63,10 +63,10 @@ const getVisibleMonthCount = (dateRange) => {
     return 3;
   }
 
-  if (dateRange === "Last 6 Months") {
-    return 5;
-  }
-
+  /*
+   * The prototype currently contains data only
+   * from April through August.
+   */
   return 5;
 };
 
@@ -161,60 +161,40 @@ export const calculateApplicationStatus = (
   return [
     {
       name: "Received",
-      value: sum(
-        records,
-        (record) => {
-          return record.applicationStatus.received;
-        }
-      ),
+      value: sum(records, (record) => {
+        return record.applicationStatus.received;
+      }),
     },
     {
       name: "Under Verification",
-      value: sum(
-        records,
-        (record) => {
-          return record.applicationStatus
-            .underVerification;
-        }
-      ),
+      value: sum(records, (record) => {
+        return record.applicationStatus
+          .underVerification;
+      }),
     },
     {
       name: "Approved",
-      value: sum(
-        records,
-        (record) => {
-          return record.applicationStatus.approved;
-        }
-      ),
+      value: sum(records, (record) => {
+        return record.applicationStatus.approved;
+      }),
     },
     {
       name: "Sanctioned",
-      value: sum(
-        records,
-        (record) => {
-          return record.applicationStatus
-            .sanctioned;
-        }
-      ),
+      value: sum(records, (record) => {
+        return record.applicationStatus.sanctioned;
+      }),
     },
     {
       name: "Rejected",
-      value: sum(
-        records,
-        (record) => {
-          return record.applicationStatus.rejected;
-        }
-      ),
+      value: sum(records, (record) => {
+        return record.applicationStatus.rejected;
+      }),
     },
     {
       name: "Disbursed",
-      value: sum(
-        records,
-        (record) => {
-          return record.applicationStatus
-            .disbursed;
-        }
-      ),
+      value: sum(records, (record) => {
+        return record.applicationStatus.disbursed;
+      }),
     },
   ];
 };
@@ -225,30 +205,21 @@ export const calculatePaymentStatus = (
   return [
     {
       name: "Successful",
-      value: sum(
-        records,
-        (record) => {
-          return record.paymentStatus.successful;
-        }
-      ),
+      value: sum(records, (record) => {
+        return record.paymentStatus.successful;
+      }),
     },
     {
       name: "Failed",
-      value: sum(
-        records,
-        (record) => {
-          return record.paymentStatus.failed;
-        }
-      ),
+      value: sum(records, (record) => {
+        return record.paymentStatus.failed;
+      }),
     },
     {
       name: "Pending",
-      value: sum(
-        records,
-        (record) => {
-          return record.paymentStatus.pending;
-        }
-      ),
+      value: sum(records, (record) => {
+        return record.paymentStatus.pending;
+      }),
     },
   ];
 };
@@ -413,17 +384,15 @@ export const calculateDbtTrend = (
       : 0;
 
   /*
-   * The record values represent annual programme
-   * amounts. For the prototype trend, 42% of the
-   * annual sanctioned amount is treated as released
-   * from April through August.
+   * The annual aggregate is converted into an
+   * April-to-August prototype reporting period.
    */
   const sanctionedTillAugust =
     totalSanctionedAmount * 0.42;
 
   /*
-   * Disbursed funds can never exceed the amount
-   * sanctioned through August.
+   * Disbursement must always remain below the
+   * amount sanctioned through August.
    */
   const disbursedTillAugust = Math.min(
     totalDisbursedAmount,
@@ -431,9 +400,8 @@ export const calculateDbtTrend = (
   );
 
   /*
-   * Returned or rejected amount is calculated from
-   * the DBT payment failure rate and cannot exceed
-   * the amount disbursed.
+   * Returned or rejected funds are calculated
+   * from the failed-payment ratio.
    */
   const returnedTillAugust = Math.min(
     disbursedTillAugust * failureRate,
@@ -457,6 +425,7 @@ export const calculateDbtTrend = (
 
         return {
           month: monthConfiguration.month,
+
           fullMonth:
             monthConfiguration.fullMonth,
 
@@ -496,6 +465,284 @@ export const calculateDbtTrend = (
   );
 };
 
+export const calculateSchemeHealth = (
+  records
+) => {
+  const schemeTotals = records.reduce(
+    (totals, record) => {
+      const schemeName = record.scheme;
+
+      if (!totals[schemeName]) {
+        totals[schemeName] = {
+          sanctionedAmount: 0,
+          disbursedAmount: 0,
+          successfulPayments: 0,
+          failedPayments: 0,
+          pendingPayments: 0,
+          applications: 0,
+          approvedApplications: 0,
+        };
+      }
+
+      const schemeTotal =
+        totals[schemeName];
+
+      schemeTotal.sanctionedAmount +=
+        record.sanctionedAmount;
+
+      schemeTotal.disbursedAmount +=
+        record.disbursedAmount;
+
+      schemeTotal.successfulPayments +=
+        record.paymentStatus.successful;
+
+      schemeTotal.failedPayments +=
+        record.paymentStatus.failed;
+
+      schemeTotal.pendingPayments +=
+        record.paymentStatus.pending;
+
+      schemeTotal.applications +=
+        record.applications;
+
+      schemeTotal.approvedApplications +=
+        record.applicationStatus.approved;
+
+      return totals;
+    },
+    {}
+  );
+
+  const schemeStatuses = Object.entries(
+    schemeTotals
+  ).map(([scheme, totals]) => {
+    const utilisationRate =
+      totals.sanctionedAmount > 0
+        ? totals.disbursedAmount /
+          totals.sanctionedAmount
+        : 0;
+
+    const totalPaymentAttempts =
+      totals.successfulPayments +
+      totals.failedPayments +
+      totals.pendingPayments;
+
+    const paymentSuccessRate =
+      totalPaymentAttempts > 0
+        ? totals.successfulPayments /
+          totalPaymentAttempts
+        : 0;
+
+    const approvalRate =
+      totals.applications > 0
+        ? totals.approvedApplications /
+          totals.applications
+        : 0;
+
+    /*
+     * Composite score:
+     *
+     * Fund utilisation: 50%
+     * Payment success: 30%
+     * Application approval: 20%
+     */
+    const healthScore =
+      utilisationRate * 0.5 +
+      paymentSuccessRate * 0.3 +
+      approvalRate * 0.2;
+
+    return {
+      scheme,
+      status: "Needs Review",
+
+      utilisationRate: Number(
+        (utilisationRate * 100).toFixed(1)
+      ),
+
+      paymentSuccessRate: Number(
+        (paymentSuccessRate * 100).toFixed(1)
+      ),
+
+      approvalRate: Number(
+        (approvalRate * 100).toFixed(1)
+      ),
+
+      healthScore: Number(
+        (healthScore * 100).toFixed(1)
+      ),
+
+      sanctionedAmount:
+        totals.sanctionedAmount,
+
+      disbursedAmount:
+        totals.disbursedAmount,
+    };
+  });
+
+  /*
+   * Rank schemes against other schemes currently
+   * visible on the dashboard.
+   *
+   * This is appropriate for the prototype because
+   * the source data is synthetic and the aim is to
+   * show a useful spread of monitoring statuses.
+   */
+  const rankedSchemes = [
+    ...schemeStatuses,
+  ].sort((firstScheme, secondScheme) => {
+    return (
+      secondScheme.healthScore -
+      firstScheme.healthScore
+    );
+  });
+
+  const totalSchemes = rankedSchemes.length;
+
+  rankedSchemes.forEach(
+    (schemeStatus, index) => {
+      /*
+       * A single selected scheme should retain a
+       * score-based status instead of using ranking.
+       */
+      if (totalSchemes === 1) {
+        if (schemeStatus.healthScore >= 75) {
+          schemeStatus.status = "Completed";
+        } else if (
+          schemeStatus.healthScore >= 60
+        ) {
+          schemeStatus.status = "On Track";
+        } else if (
+          schemeStatus.healthScore >= 45
+        ) {
+          schemeStatus.status =
+            "Needs Review";
+        } else {
+          schemeStatus.status = "Critical";
+        }
+
+        return;
+      }
+
+      /*
+       * Two or three visible schemes use compact
+       * relative bands.
+       */
+      if (totalSchemes <= 3) {
+        if (index === 0) {
+          schemeStatus.status = "On Track";
+        } else if (
+          index === totalSchemes - 1
+        ) {
+          schemeStatus.status = "Critical";
+        } else {
+          schemeStatus.status =
+            "Needs Review";
+        }
+
+        return;
+      }
+
+      /*
+       * For four or more schemes:
+       *
+       * Highest-ranked scheme: Completed
+       * Next roughly 45%: On Track
+       * Next roughly 30%: Needs Review
+       * Lowest-ranked scheme: Critical
+       */
+      const completedCount = 1;
+      const criticalCount = 1;
+
+      const reviewCount = Math.max(
+        1,
+        Math.round(totalSchemes * 0.29)
+      );
+
+      const onTrackEnd =
+        totalSchemes -
+        reviewCount -
+        criticalCount;
+
+      if (index < completedCount) {
+        schemeStatus.status = "Completed";
+      } else if (index < onTrackEnd) {
+        schemeStatus.status = "On Track";
+      } else if (
+        index < totalSchemes - criticalCount
+      ) {
+        schemeStatus.status =
+          "Needs Review";
+      } else {
+        schemeStatus.status = "Critical";
+      }
+    }
+  );
+
+  /*
+   * Restore the original scheme order for any
+   * downstream components that display scheme lists.
+   */
+  const statusByScheme = rankedSchemes.reduce(
+    (statuses, schemeStatus) => {
+      statuses[schemeStatus.scheme] =
+        schemeStatus.status;
+
+      return statuses;
+    },
+    {}
+  );
+
+  const finalSchemeStatuses =
+    schemeStatuses.map((schemeStatus) => {
+      return {
+        ...schemeStatus,
+        status:
+          statusByScheme[schemeStatus.scheme],
+      };
+    });
+
+  const statusCounts = {
+    "On Track": 0,
+    "Needs Review": 0,
+    Critical: 0,
+    Completed: 0,
+  };
+
+  finalSchemeStatuses.forEach(
+    (schemeStatus) => {
+      statusCounts[schemeStatus.status] += 1;
+    }
+  );
+
+  const statusData = [
+    {
+      name: "On Track",
+      value: statusCounts["On Track"],
+    },
+    {
+      name: "Needs Review",
+      value: statusCounts["Needs Review"],
+    },
+    {
+      name: "Critical",
+      value: statusCounts.Critical,
+    },
+    {
+      name: "Completed",
+      value: statusCounts.Completed,
+    },
+  ];
+
+  return {
+    totalSchemes:
+      finalSchemeStatuses.length,
+
+    statusData,
+
+    schemes: finalSchemeStatuses,
+  };
+};
+
 export const calculateDashboardData = (
   records,
   filters
@@ -505,7 +752,9 @@ export const calculateDashboardData = (
 
   return {
     filteredRecords,
+
     hasData: filteredRecords.length > 0,
+
     recordCount: filteredRecords.length,
 
     kpis: calculateKpis(filteredRecords),
@@ -534,6 +783,10 @@ export const calculateDashboardData = (
     dbtTrend: calculateDbtTrend(
       filteredRecords,
       filters.dateRange
+    ),
+
+    schemeHealth: calculateSchemeHealth(
+      filteredRecords
     ),
   };
 };
