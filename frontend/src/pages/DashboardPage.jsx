@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import ApplicationStatusChart from "../components/charts/ApplicationStatusChart";
+import DbtDisbursementTrend from "../components/charts/DbtDisbursementTrend";
 import PaymentOverviewChart from "../components/charts/PaymentOverviewChart";
 import TopSchemesChart from "../components/charts/TopSchemesChart";
 import DashboardFilters from "../components/dashboard/DashboardFilters";
@@ -18,7 +19,6 @@ import KpiCard from "../components/dashboard/KpiCard";
 import TransactionFlow from "../components/dashboard/TransactionFlow";
 
 import { dashboardRecords } from "../data/dashboardData";
-
 import { calculateDashboardData } from "../utils/dashboardCalculations";
 
 import {
@@ -59,10 +59,7 @@ const escapeCsvValue = (value) => {
     stringValue.includes('"') ||
     stringValue.includes("\n")
   ) {
-    return `"${stringValue.replaceAll(
-      '"',
-      '""'
-    )}"`;
+    return `"${stringValue.replaceAll('"', '""')}"`;
   }
 
   return stringValue;
@@ -90,9 +87,7 @@ const createCsvContent = (records) => {
 
   return [CSV_HEADERS, ...rows]
     .map((row) => {
-      return row
-        .map(escapeCsvValue)
-        .join(",");
+      return row.map(escapeCsvValue).join(",");
     })
     .join("\n");
 };
@@ -138,8 +133,11 @@ function DashboardPage() {
   const activeFilterCount = useMemo(() => {
     return Object.keys(DEFAULT_FILTERS).reduce(
       (count, filterName) => {
-        return filters[filterName] !==
-          DEFAULT_FILTERS[filterName]
+        const isFilterModified =
+          filters[filterName] !==
+          DEFAULT_FILTERS[filterName];
+
+        return isFilterModified
           ? count + 1
           : count;
       },
@@ -160,7 +158,9 @@ function DashboardPage() {
   };
 
   const handleResetFilters = () => {
-    setFilters(DEFAULT_FILTERS);
+    setFilters({
+      ...DEFAULT_FILTERS,
+    });
   };
 
   const handleToggleTableMode = () => {
@@ -306,164 +306,175 @@ function DashboardPage() {
       </section>
 
       {dashboardData.hasData ? (
-        <>
-          {isTableMode ? (
-            <section className="content-card accessible-table-card">
-              <div className="accessible-table-heading">
-                <div>
-                  <span className="section-label">
-                    Accessible data view
-                  </span>
-
-                  <h2>
-                    Filtered dashboard records
-                  </h2>
-
-                  <p>
-                    The table contains the same
-                    aggregated records used by the
-                    dashboard visualisations.
-                  </p>
-                </div>
-
-                <span className="table-record-badge">
-                  {dashboardData.recordCount}{" "}
-                  {dashboardData.recordCount === 1
-                    ? "record"
-                    : "records"}
+        isTableMode ? (
+          <section className="content-card accessible-table-card">
+            <div className="accessible-table-heading">
+              <div>
+                <span className="section-label">
+                  Accessible data view
                 </span>
+
+                <h2>Filtered dashboard records</h2>
+
+                <p>
+                  The table contains the same
+                  aggregated records used by the
+                  dashboard visualisations.
+                </p>
               </div>
 
-              <div className="accessible-table-wrapper">
-                <table className="accessible-dashboard-table">
-                  <caption className="visually-hidden">
-                    Filtered social welfare
-                    dashboard records
-                  </caption>
+              <span className="table-record-badge">
+                {dashboardData.recordCount}{" "}
+                {dashboardData.recordCount === 1
+                  ? "record"
+                  : "records"}
+              </span>
+            </div>
 
-                  <thead>
-                    <tr>
-                      <th scope="col">
-                        Financial Year
-                      </th>
-                      <th scope="col">
-                        District
-                      </th>
-                      <th scope="col">
-                        Scheme
-                      </th>
-                      <th scope="col">
-                        Category
-                      </th>
-                      <th scope="col">
-                        Beneficiaries
-                      </th>
-                      <th scope="col">
-                        Applications
-                      </th>
-                      <th scope="col">
-                        Approved
-                      </th>
-                      <th scope="col">
-                        Sanctioned Amount
-                      </th>
-                      <th scope="col">
-                        Disbursed Amount
-                      </th>
-                      <th scope="col">
-                        Open Grievances
-                      </th>
-                    </tr>
-                  </thead>
+            <div className="accessible-table-wrapper">
+              <table className="accessible-dashboard-table">
+                <caption className="visually-hidden">
+                  Filtered social welfare dashboard
+                  records
+                </caption>
 
-                  <tbody>
-                    {dashboardData.filteredRecords.map(
-                      (record) => (
-                        <tr key={record.id}>
-                          <td>
-                            {record.financialYear}
-                          </td>
-                          <td>{record.district}</td>
-                          <td>{record.scheme}</td>
-                          <td>
-                            {
-                              record.beneficiaryCategory
-                            }
-                          </td>
-                          <td>
-                            {formatIndianNumber(
-                              record.beneficiaries
-                            )}
-                          </td>
-                          <td>
-                            {formatIndianNumber(
-                              record.applications
-                            )}
-                          </td>
-                          <td>
-                            {formatIndianNumber(
-                              record
-                                .applicationStatus
-                                .approved
-                            )}
-                          </td>
-                          <td>
-                            {formatCurrencyCompact(
-                              record.sanctionedAmount
-                            )}
-                          </td>
-                          <td>
-                            {formatCurrencyCompact(
-                              record.disbursedAmount
-                            )}
-                          </td>
-                          <td>
-                            {formatIndianNumber(
-                              record.grievances.open
-                            )}
-                          </td>
-                        </tr>
-                      )
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-          ) : (
-            <>
-              <section className="primary-chart-grid">
-                <ApplicationStatusChart
-                  data={
-                    dashboardData.applicationStatus
-                  }
-                />
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      Financial Year
+                    </th>
 
-                <TopSchemesChart
-                  data={dashboardData.topSchemes}
-                />
+                    <th scope="col">District</th>
 
-                <PaymentOverviewChart
-                  data={dashboardData.paymentStatus}
-                  disbursedAmount={formatCurrencyCompact(
-                    kpis.totalAmountDisbursed
+                    <th scope="col">Scheme</th>
+
+                    <th scope="col">Category</th>
+
+                    <th scope="col">
+                      Beneficiaries
+                    </th>
+
+                    <th scope="col">
+                      Applications
+                    </th>
+
+                    <th scope="col">Approved</th>
+
+                    <th scope="col">
+                      Sanctioned Amount
+                    </th>
+
+                    <th scope="col">
+                      Disbursed Amount
+                    </th>
+
+                    <th scope="col">
+                      Open Grievances
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {dashboardData.filteredRecords.map(
+                    (record) => (
+                      <tr key={record.id}>
+                        <td>
+                          {record.financialYear}
+                        </td>
+
+                        <td>{record.district}</td>
+
+                        <td>{record.scheme}</td>
+
+                        <td>
+                          {
+                            record.beneficiaryCategory
+                          }
+                        </td>
+
+                        <td>
+                          {formatIndianNumber(
+                            record.beneficiaries
+                          )}
+                        </td>
+
+                        <td>
+                          {formatIndianNumber(
+                            record.applications
+                          )}
+                        </td>
+
+                        <td>
+                          {formatIndianNumber(
+                            record.applicationStatus
+                              .approved
+                          )}
+                        </td>
+
+                        <td>
+                          {formatCurrencyCompact(
+                            record.sanctionedAmount
+                          )}
+                        </td>
+
+                        <td>
+                          {formatCurrencyCompact(
+                            record.disbursedAmount
+                          )}
+                        </td>
+
+                        <td>
+                          {formatIndianNumber(
+                            record.grievances.open
+                          )}
+                        </td>
+                      </tr>
+                    )
                   )}
-                />
-              </section>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ) : (
+          <>
+            <DbtDisbursementTrend
+              data={dashboardData.dbtTrend}
+              financialYear={filters.financialYear}
+              dateRange={filters.dateRange}
+            />
 
-              <section className="secondary-dashboard-grid">
-                <TransactionFlow
-                  data={
-                    dashboardData.transactionFlow
-                  }
-                />
+            <section className="primary-chart-grid">
+              <ApplicationStatusChart
+                data={
+                  dashboardData.applicationStatus
+                }
+              />
 
-                <GrievanceOverview
-                  data={dashboardData.grievances}
-                />
-              </section>
-            </>
-          )}
-        </>
+              <TopSchemesChart
+                data={dashboardData.topSchemes}
+              />
+
+              <PaymentOverviewChart
+                data={dashboardData.paymentStatus}
+                disbursedAmount={formatCurrencyCompact(
+                  kpis.totalAmountDisbursed
+                )}
+              />
+            </section>
+
+            <section className="secondary-dashboard-grid">
+              <TransactionFlow
+                data={
+                  dashboardData.transactionFlow
+                }
+              />
+
+              <GrievanceOverview
+                data={dashboardData.grievances}
+              />
+            </section>
+          </>
+        )
       ) : (
         <section className="content-card no-data-card">
           <MessageSquareText

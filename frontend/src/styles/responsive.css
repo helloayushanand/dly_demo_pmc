@@ -468,12 +468,53 @@
    Expanded dashboard controls
    ========================================================= */
 
-@media (max-width: 1350px) {
+/* =========================================================
+   Dashboard filter responsiveness
+   ========================================================= */
+
+/*
+ * Keep all five filters in one row on normal
+ * desktop and large laptop screens.
+ */
+@media (min-width: 1181px) {
+  .dashboard-filter-grid {
+    grid-template-columns: repeat(
+      5,
+      minmax(0, 1fr)
+    );
+  }
+}
+
+/*
+ * Three columns on smaller laptop screens.
+ */
+@media (min-width: 901px) and (max-width: 1180px) {
   .dashboard-filter-grid {
     grid-template-columns: repeat(
       3,
-      minmax(180px, 1fr)
+      minmax(0, 1fr)
     );
+  }
+}
+
+/*
+ * Two columns on tablets.
+ */
+@media (min-width: 701px) and (max-width: 900px) {
+  .dashboard-filter-grid {
+    grid-template-columns: repeat(
+      2,
+      minmax(0, 1fr)
+    );
+  }
+}
+
+/*
+ * One column on mobile devices.
+ */
+@media (max-width: 700px) {
+  .dashboard-filter-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -541,5 +582,49 @@
   .accessible-table-heading {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+/* =========================================================
+   DBT disbursement trend
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .dbt-trend-chart {
+    height: 310px;
+  }
+}
+
+@media (max-width: 700px) {
+  .dbt-trend-card {
+    padding: 14px;
+  }
+
+  .dbt-trend-heading {
+    flex-direction: column;
+  }
+
+  .dbt-trend-context {
+    align-items: flex-start;
+    flex-direction: row;
+  }
+
+  .dbt-trend-chart {
+    height: 300px;
+    margin-left: -8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .dbt-trend-heading h2 {
+    font-size: 13px;
+  }
+
+  .dbt-trend-chart {
+    height: 280px;
+  }
+
+  .dbt-trend-tooltip {
+    min-width: 185px;
   }
 }
