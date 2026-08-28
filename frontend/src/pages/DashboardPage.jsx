@@ -9,7 +9,7 @@ import {
   WalletCards,
 } from "lucide-react";
 
-
+import AlertsPanel from "../components/dashboard/AlertsPanel";
 import FundUtilisation from "../components/dashboard/FundUtilisation";
 import SchemeHealthChart from "../components/charts/SchemeHealthChart";
 
@@ -456,9 +456,18 @@ function DashboardPage() {
             />
           </section>
 
-          <FundUtilisation
-            data={dashboardData.fundUtilisation}
-          />
+          <section className="dashboard-operations-grid">
+            <AlertsPanel
+              alerts={dashboardData.alerts.alerts}
+              criticalAlertCount={
+                dashboardData.alerts.criticalAlertCount
+              }
+            />
+
+            <FundUtilisation
+              data={dashboardData.fundUtilisation}
+            />
+          </section>
 
           <section className="primary-chart-grid"></section>
 

@@ -791,6 +791,303 @@ export const calculateFundUtilisation = (
     });
 };
 
+export const calculateDashboardAlerts = (
+  records
+) => {
+  const schemeTotals = records.reduce(
+    (totals, record) => {
+      const schemeName = record.scheme;
+
+      if (!totals[schemeName]) {
+        totals[schemeName] = {
+          sanctionedAmount: 0,
+          disbursedAmount: 0,
+          applications: 0,
+          approvedApplications: 0,
+          successfulPayments: 0,
+          failedPayments: 0,
+          pendingPayments: 0,
+          totalGrievances: 0,
+          openGrievances: 0,
+        };
+      }
+
+      const schemeTotal =
+        totals[schemeName];
+
+      schemeTotal.sanctionedAmount +=
+        record.sanctionedAmount;
+
+      schemeTotal.disbursedAmount +=
+        record.disbursedAmount;
+
+      schemeTotal.applications +=
+        record.applications;
+
+      schemeTotal.approvedApplications +=
+        record.applicationStatus.approved;
+
+      schemeTotal.successfulPayments +=
+        record.paymentStatus.successful;
+
+      schemeTotal.failedPayments +=
+        record.paymentStatus.failed;
+
+      schemeTotal.pendingPayments +=
+        record.paymentStatus.pending;
+
+      schemeTotal.totalGrievances +=
+        record.grievances.total;
+
+      schemeTotal.openGrievances +=
+        record.grievances.open;
+
+      return totals;
+    },
+    {}
+  );
+
+  const alerts = [];
+  let alertId = 1;
+
+  const addAlert = ({
+    severity,
+    title,
+    scheme,
+    description,
+    metric,
+    timestamp,
+  }) => {
+    alerts.push({
+      id: `alert-${alertId}`,
+      severity,
+      title,
+      scheme,
+      description,
+      metric,
+      timestamp,
+    });
+
+    alertId += 1;
+  };
+
+  Object.entries(schemeTotals).forEach(
+    ([scheme, totals], schemeIndex) => {
+      const utilisationRate =
+        totals.sanctionedAmount > 0
+          ? (
+              totals.disbursedAmount /
+              totals.sanctionedAmount
+            ) * 100
+          : 0;
+
+      const totalPaymentAttempts =
+        totals.successfulPayments +
+        totals.failedPayments +
+        totals.pendingPayments;
+
+      const paymentFailureRate =
+        totalPaymentAttempts > 0
+          ? (
+              totals.failedPayments /
+              totalPaymentAttempts
+            ) * 100
+          : 0;
+
+      const pendingPaymentRate =
+        totalPaymentAttempts > 0
+          ? (
+              totals.pendingPayments /
+              totalPaymentAttempts
+            ) * 100
+          : 0;
+
+      const approvalRate =
+        totals.applications > 0
+          ? (
+              totals.approvedApplications /
+              totals.applications
+            ) * 100
+          : 0;
+
+      const openGrievanceRate =
+        totals.totalGrievances > 0
+          ? (
+              totals.openGrievances /
+              totals.totalGrievances
+            ) * 100
+          : 0;
+
+      const timestampOptions = [
+        "12 minutes ago",
+        "28 minutes ago",
+        "1 hour ago",
+        "2 hours ago",
+        "Today, 10:15 AM",
+        "Today, 9:40 AM",
+        "Yesterday",
+      ];
+
+      const timestamp =
+        timestampOptions[
+          schemeIndex %
+            timestampOptions.length
+        ];
+
+      if (utilisationRate < 45) {
+        addAlert({
+          severity: "high",
+          title: "Low fund utilisation",
+          scheme,
+          description:
+            "Fund utilisation is below the expected implementation threshold. Programme and finance teams should review pending releases.",
+          metric: `${utilisationRate.toFixed(
+            1
+          )}% utilised`,
+          timestamp,
+        });
+      } else if (utilisationRate < 70) {
+        addAlert({
+          severity: "medium",
+          title: "Fund utilisation needs review",
+          scheme,
+          description:
+            "Fund utilisation is progressing below the preferred level for the current reporting period.",
+          metric: `${utilisationRate.toFixed(
+            1
+          )}% utilised`,
+          timestamp,
+        });
+      }
+
+      if (paymentFailureRate >= 3) {
+        addAlert({
+          severity: "high",
+          title: "Elevated DBT failure rate",
+          scheme,
+          description:
+            "Failed payment transactions have crossed the monitoring threshold. Bank account and payment-validation issues should be reviewed.",
+          metric: `${paymentFailureRate.toFixed(
+            1
+          )}% failed`,
+          timestamp,
+        });
+      } else if (paymentFailureRate >= 2) {
+        addAlert({
+          severity: "medium",
+          title: "DBT failures require attention",
+          scheme,
+          description:
+            "Payment failures are approaching the operational threshold and may require beneficiary account validation.",
+          metric: `${paymentFailureRate.toFixed(
+            1
+          )}% failed`,
+          timestamp,
+        });
+      }
+
+      if (pendingPaymentRate >= 5) {
+        addAlert({
+          severity: "medium",
+          title: "Pending payments accumulating",
+          scheme,
+          description:
+            "A notable proportion of initiated DBT transactions remains pending and should be reconciled.",
+          metric: `${pendingPaymentRate.toFixed(
+            1
+          )}% pending`,
+          timestamp,
+        });
+      }
+
+      if (approvalRate < 60) {
+        addAlert({
+          severity: "medium",
+          title: "Application approval rate is low",
+          scheme,
+          description:
+            "The application approval rate is below the expected programme threshold. Verification and rejection reasons should be reviewed.",
+          metric: `${approvalRate.toFixed(
+            1
+          )}% approved`,
+          timestamp,
+        });
+      }
+
+      if (openGrievanceRate >= 20) {
+        addAlert({
+          severity: "medium",
+          title: "Open grievances require action",
+          scheme,
+          description:
+            "The proportion of unresolved grievances is above the preferred service-delivery threshold.",
+          metric: `${openGrievanceRate.toFixed(
+            1
+          )}% open`,
+          timestamp,
+        });
+      }
+
+      if (
+        utilisationRate >= 75 &&
+        paymentFailureRate < 3 &&
+        approvalRate >= 65
+      ) {
+        addAlert({
+          severity: "info",
+          title: "Scheme performance is stable",
+          scheme,
+          description:
+            "Fund utilisation and DBT transaction performance are within the expected operating range.",
+          metric: `${utilisationRate.toFixed(
+            1
+          )}% utilised`,
+          timestamp,
+        });
+      }
+    }
+  );
+
+  const severityOrder = {
+    high: 1,
+    medium: 2,
+    info: 3,
+  };
+
+  const sortedAlerts = alerts.sort(
+    (firstAlert, secondAlert) => {
+      return (
+        severityOrder[firstAlert.severity] -
+        severityOrder[secondAlert.severity]
+      );
+    }
+  );
+
+  const criticalAlertCount =
+    sortedAlerts.filter((alert) => {
+      return alert.severity === "high";
+    }).length;
+
+  const warningAlertCount =
+    sortedAlerts.filter((alert) => {
+      return alert.severity === "medium";
+    }).length;
+
+  const informationAlertCount =
+    sortedAlerts.filter((alert) => {
+      return alert.severity === "info";
+    }).length;
+
+  return {
+    alerts: sortedAlerts,
+    totalAlertCount: sortedAlerts.length,
+    criticalAlertCount,
+    warningAlertCount,
+    informationAlertCount,
+  };
+};
+
+
 export const calculateDashboardData = (
   records,
   filters
@@ -832,14 +1129,22 @@ export const calculateDashboardData = (
       filteredRecords,
       filters.dateRange
     ),
-
-    schemeHealth: calculateSchemeHealth(
-      filteredRecords
-    ),
-
+    
     fundUtilisation:
       calculateFundUtilisation(
         filteredRecords
       ),
+    schemeHealth: calculateSchemeHealth(
+        filteredRecords
+      ),
+    fundUtilisation:
+        calculateFundUtilisation(
+          filteredRecords
+        ),
+
+    alerts: calculateDashboardAlerts(
+        filteredRecords
+      ),
+    
   };
 };
