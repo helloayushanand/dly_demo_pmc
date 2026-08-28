@@ -9,7 +9,12 @@ import {
   WalletCards,
 } from "lucide-react";
 
+import AlertsPanel from "../components/dashboard/AlertsPanel";
+import FundUtilisation from "../components/dashboard/FundUtilisation";
+import SchemeHealthChart from "../components/charts/SchemeHealthChart";
+
 import ApplicationStatusChart from "../components/charts/ApplicationStatusChart";
+import DbtDisbursementTrend from "../components/charts/DbtDisbursementTrend";
 import PaymentOverviewChart from "../components/charts/PaymentOverviewChart";
 import TopSchemesChart from "../components/charts/TopSchemesChart";
 import DashboardFilters from "../components/dashboard/DashboardFilters";
@@ -18,7 +23,6 @@ import KpiCard from "../components/dashboard/KpiCard";
 import TransactionFlow from "../components/dashboard/TransactionFlow";
 
 import { dashboardRecords } from "../data/dashboardData";
-
 import { calculateDashboardData } from "../utils/dashboardCalculations";
 
 import {
@@ -30,12 +34,98 @@ const DEFAULT_FILTERS = {
   financialYear: "2026-27",
   district: "All Districts",
   scheme: "All Schemes",
+  beneficiaryCategory: "All Categories",
+  dateRange: "This Financial Year",
+};
+
+const CSV_HEADERS = [
+  "Financial Year",
+  "District",
+  "Scheme",
+  "Beneficiary Category",
+  "Beneficiaries",
+  "Applications",
+  "Approved Applications",
+  "Rejected Applications",
+  "Sanctioned Amount",
+  "Disbursed Amount",
+  "Successful Payments",
+  "Failed Payments",
+  "Pending Payments",
+  "Open Grievances",
+];
+
+const escapeCsvValue = (value) => {
+  const stringValue = String(value ?? "");
+
+  if (
+    stringValue.includes(",") ||
+    stringValue.includes('"') ||
+    stringValue.includes("\n")
+  ) {
+    return `"${stringValue.replaceAll('"', '""')}"`;
+  }
+
+  return stringValue;
+};
+
+const createCsvContent = (records) => {
+  const rows = records.map((record) => {
+    return [
+      record.financialYear,
+      record.district,
+      record.scheme,
+      record.beneficiaryCategory,
+      record.beneficiaries,
+      record.applications,
+      record.applicationStatus.approved,
+      record.applicationStatus.rejected,
+      record.sanctionedAmount,
+      record.disbursedAmount,
+      record.paymentStatus.successful,
+      record.paymentStatus.failed,
+      record.paymentStatus.pending,
+      record.grievances.open,
+    ];
+  });
+
+  return [CSV_HEADERS, ...rows]
+    .map((row) => {
+      return row.map(escapeCsvValue).join(",");
+    })
+    .join("\n");
+};
+
+const downloadTextFile = (
+  content,
+  fileName,
+  contentType
+) => {
+  const blob = new Blob([content], {
+    type: contentType,
+  });
+
+  const downloadUrl = URL.createObjectURL(blob);
+  const temporaryLink =
+    document.createElement("a");
+
+  temporaryLink.href = downloadUrl;
+  temporaryLink.download = fileName;
+
+  document.body.appendChild(temporaryLink);
+  temporaryLink.click();
+  temporaryLink.remove();
+
+  URL.revokeObjectURL(downloadUrl);
 };
 
 function DashboardPage() {
   const [filters, setFilters] = useState(
     DEFAULT_FILTERS
   );
+
+  const [isTableMode, setIsTableMode] =
+    useState(false);
 
   const dashboardData = useMemo(() => {
     return calculateDashboardData(
@@ -44,38 +134,62 @@ function DashboardPage() {
     );
   }, [filters]);
 
+  const activeFilterCount = useMemo(() => {
+    return Object.keys(DEFAULT_FILTERS).reduce(
+      (count, filterName) => {
+        const isFilterModified =
+          filters[filterName] !==
+          DEFAULT_FILTERS[filterName];
+
+        return isFilterModified
+          ? count + 1
+          : count;
+      },
+      0
+    );
+  }, [filters]);
+
   const handleFilterChange = (
     filterName,
     value
   ) => {
     setFilters((currentFilters) => {
-      if (filterName === "financialYear") {
-        return {
-          ...currentFilters,
-          financialYear: value,
-        };
-      }
-
-      if (filterName === "district") {
-        return {
-          ...currentFilters,
-          district: value,
-        };
-      }
-
-      if (filterName === "scheme") {
-        return {
-          ...currentFilters,
-          scheme: value,
-        };
-      }
-
-      return currentFilters;
+      return {
+        ...currentFilters,
+        value,
+      };
     });
   };
 
   const handleResetFilters = () => {
-    setFilters(DEFAULT_FILTERS);
+    setFilters({
+      ...DEFAULT_FILTERS,
+    });
+  };
+
+  const handleToggleTableMode = () => {
+    setIsTableMode(
+      (currentTableMode) => !currentTableMode
+    );
+  };
+
+  const handleDownloadCsv = () => {
+    const csvContent = createCsvContent(
+      dashboardData.filteredRecords
+    );
+
+    const safeFinancialYear =
+      filters.financialYear.replaceAll(" ", "-");
+
+    downloadTextFile(
+      `\uFEFF${csvContent}`,
+      `dashboard-report-${safeFinancialYear}.csv`,
+      "text/csv;charset=utf-8"
+    );
+  };
+
+  const handleExportPdf = () => {
+    window.print();
   };
 
   const { kpis } = dashboardData;
@@ -141,11 +255,11 @@ function DashboardPage() {
     <div className="dashboard-page">
       <section className="dashboard-heading-row">
         <div>
-          <h1>Dashboard</h1>
+          <h1>Integrated MIS Dashboard</h1>
 
           <p>
-            Welcome to the Integrated Beneficiary
-            Management System
+            Punjab social welfare scheme monitoring,
+            beneficiary services and DBT management
           </p>
         </div>
 
@@ -158,6 +272,13 @@ function DashboardPage() {
         filters={filters}
         onFilterChange={handleFilterChange}
         onReset={handleResetFilters}
+        onExportPdf={handleExportPdf}
+        onDownloadCsv={handleDownloadCsv}
+        onToggleTableMode={
+          handleToggleTableMode
+        }
+        isTableMode={isTableMode}
+        activeFilterCount={activeFilterCount}
       />
 
       <section className="active-filter-summary">
@@ -166,6 +287,10 @@ function DashboardPage() {
         <strong>{filters.financialYear}</strong>
         <strong>{filters.district}</strong>
         <strong>{filters.scheme}</strong>
+        <strong>
+          {filters.beneficiaryCategory}
+        </strong>
+        <strong>{filters.dateRange}</strong>
 
         <span className="record-count">
           {dashboardData.recordCount} aggregated{" "}
@@ -185,34 +310,199 @@ function DashboardPage() {
       </section>
 
       {dashboardData.hasData ? (
-        <>
-          <section className="primary-chart-grid">
-            <ApplicationStatusChart
-              data={dashboardData.applicationStatus}
+        isTableMode ? (
+          <section className="content-card accessible-table-card">
+            <div className="accessible-table-heading">
+              <div>
+                <span className="section-label">
+                  Accessible data view
+                </span>
+
+                <h2>Filtered dashboard records</h2>
+
+                <p>
+                  The table contains the same
+                  aggregated records used by the
+                  dashboard visualisations.
+                </p>
+              </div>
+
+              <span className="table-record-badge">
+                {dashboardData.recordCount}{" "}
+                {dashboardData.recordCount === 1
+                  ? "record"
+                  : "records"}
+              </span>
+            </div>
+
+            <div className="accessible-table-wrapper">
+              <table className="accessible-dashboard-table">
+                <caption className="visually-hidden">
+                  Filtered social welfare dashboard
+                  records
+                </caption>
+
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      Financial Year
+                    </th>
+
+                    <th scope="col">District</th>
+
+                    <th scope="col">Scheme</th>
+
+                    <th scope="col">Category</th>
+
+                    <th scope="col">
+                      Beneficiaries
+                    </th>
+
+                    <th scope="col">
+                      Applications
+                    </th>
+
+                    <th scope="col">Approved</th>
+
+                    <th scope="col">
+                      Sanctioned Amount
+                    </th>
+
+                    <th scope="col">
+                      Disbursed Amount
+                    </th>
+
+                    <th scope="col">
+                      Open Grievances
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {dashboardData.filteredRecords.map(
+                    (record) => (
+                      <tr key={record.id}>
+                        <td>
+                          {record.financialYear}
+                        </td>
+
+                        <td>{record.district}</td>
+
+                        <td>{record.scheme}</td>
+
+                        <td>
+                          {
+                            record.beneficiaryCategory
+                          }
+                        </td>
+
+                        <td>
+                          {formatIndianNumber(
+                            record.beneficiaries
+                          )}
+                        </td>
+
+                        <td>
+                          {formatIndianNumber(
+                            record.applications
+                          )}
+                        </td>
+
+                        <td>
+                          {formatIndianNumber(
+                            record.applicationStatus
+                              .approved
+                          )}
+                        </td>
+
+                        <td>
+                          {formatCurrencyCompact(
+                            record.sanctionedAmount
+                          )}
+                        </td>
+
+                        <td>
+                          {formatCurrencyCompact(
+                            record.disbursedAmount
+                          )}
+                        </td>
+
+                        <td>
+                          {formatIndianNumber(
+                            record.grievances.open
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ) : (
+          <>
+          <section className="dashboard-monitoring-grid">
+            <DbtDisbursementTrend
+              data={dashboardData.dbtTrend}
+              financialYear={filters.financialYear}
+              dateRange={filters.dateRange}
             />
 
-            <TopSchemesChart
-              data={dashboardData.topSchemes}
-            />
-
-            <PaymentOverviewChart
-              data={dashboardData.paymentStatus}
-              disbursedAmount={formatCurrencyCompact(
-                kpis.totalAmountDisbursed
-              )}
+            <SchemeHealthChart
+              data={dashboardData.schemeHealth.statusData}
+              totalSchemes={
+                dashboardData.schemeHealth.totalSchemes
+              }
             />
           </section>
 
-          <section className="secondary-dashboard-grid">
-            <TransactionFlow
-              data={dashboardData.transactionFlow}
+          <section className="dashboard-operations-grid">
+            <AlertsPanel
+              alerts={dashboardData.alerts.alerts}
+              criticalAlertCount={
+                dashboardData.alerts.criticalAlertCount
+              }
             />
 
-            <GrievanceOverview
-              data={dashboardData.grievances}
+            <FundUtilisation
+              data={dashboardData.fundUtilisation}
             />
           </section>
-        </>
+
+          <section className="primary-chart-grid"></section>
+
+            <section className="primary-chart-grid">
+              <ApplicationStatusChart
+                data={
+                  dashboardData.applicationStatus
+                }
+              />
+
+              <TopSchemesChart
+                data={dashboardData.topSchemes}
+              />
+
+              <PaymentOverviewChart
+                data={dashboardData.paymentStatus}
+                disbursedAmount={formatCurrencyCompact(
+                  kpis.totalAmountDisbursed
+                )}
+              />
+            </section>
+
+            <section className="secondary-dashboard-grid">
+              <TransactionFlow
+                data={
+                  dashboardData.transactionFlow
+                }
+              />
+
+              <GrievanceOverview
+                data={dashboardData.grievances}
+              />
+            </section>
+          </>
+        )
       ) : (
         <section className="content-card no-data-card">
           <MessageSquareText
@@ -223,8 +513,8 @@ function DashboardPage() {
           <h2>No dashboard data available</h2>
 
           <p>
-            No records match the selected filters. Reset
-            the filters and try again.
+            No records match the selected filters.
+            Reset the filters and try again.
           </p>
 
           <button

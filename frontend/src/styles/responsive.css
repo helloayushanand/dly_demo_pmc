@@ -50,18 +50,6 @@
   }
 }
 
-@media (max-width: 1050px) {
-  .dashboard-filters {
-    grid-template-columns: repeat(
-      2,
-      minmax(180px, 1fr)
-    );
-  }
-
-  .current-date {
-    display: none;
-  }
-}
 
 @media (max-width: 960px) {
   .primary-chart-grid {
@@ -472,5 +460,373 @@
   .support-icon {
     width: 29px;
     height: 29px;
+  }
+}
+
+
+/* =========================================================
+   Expanded dashboard controls
+   ========================================================= */
+
+/* =========================================================
+   Dashboard filter responsiveness
+   ========================================================= */
+
+/*
+ * Keep all five filters in one row on normal
+ * desktop and large laptop screens.
+ */
+@media (min-width: 1181px) {
+  .dashboard-filter-grid {
+    grid-template-columns: repeat(
+      5,
+      minmax(0, 1fr)
+    );
+  }
+}
+
+/*
+ * Three columns on smaller laptop screens.
+ */
+@media (min-width: 901px) and (max-width: 1180px) {
+  .dashboard-filter-grid {
+    grid-template-columns: repeat(
+      3,
+      minmax(0, 1fr)
+    );
+  }
+}
+
+/*
+ * Two columns on tablets.
+ */
+@media (min-width: 701px) and (max-width: 900px) {
+  .dashboard-filter-grid {
+    grid-template-columns: repeat(
+      2,
+      minmax(0, 1fr)
+    );
+  }
+}
+
+/*
+ * One column on mobile devices.
+ */
+@media (max-width: 700px) {
+  .dashboard-filter-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1050px) {
+  .dashboard-filter-grid {
+    grid-template-columns: repeat(
+      2,
+      minmax(180px, 1fr)
+    );
+  }
+
+  .dashboard-filter-actions {
+    flex-wrap: wrap;
+  }
+
+  .filters-active-indicator {
+    width: 100%;
+    margin-right: 0;
+    justify-content: center;
+  }
+
+  .dashboard-action-button,
+  .reset-filters-button {
+    flex: 1 1 150px;
+  }
+}
+
+@media (min-width: 701px) and (max-width: 900px) {
+  .dashboard-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-action-button,
+  .reset-filters-button {
+    flex: 1 1 calc(50% - 8px);
+  }
+}
+
+@media (max-width: 700px) {
+  .dashboard-filter-panel {
+    padding: 12px;
+  }
+
+  .dashboard-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-filter-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .filters-active-indicator,
+  .dashboard-action-button,
+  .reset-filters-button {
+    width: 100%;
+    min-height: 44px;
+    flex: none;
+  }
+
+  .filters-active-indicator {
+    justify-content: center;
+  }
+
+  .accessible-table-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* =========================================================
+   DBT disbursement trend
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .dbt-trend-chart {
+    height: 310px;
+  }
+}
+
+@media (max-width: 700px) {
+  .dbt-trend-card {
+    padding: 14px;
+  }
+
+  .dbt-trend-heading {
+    flex-direction: column;
+  }
+
+  .dbt-trend-context {
+    align-items: flex-start;
+    flex-direction: row;
+  }
+
+  .dbt-trend-chart {
+    height: 300px;
+    margin-left: -8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .dbt-trend-heading h2 {
+    font-size: 13px;
+  }
+
+  .dbt-trend-chart {
+    height: 280px;
+  }
+
+  .dbt-trend-tooltip {
+    min-width: 185px;
+  }
+}
+
+/* =========================================================
+   Scheme health and monitoring row
+   ========================================================= */
+
+@media (max-width: 1180px) {
+  .dashboard-monitoring-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .scheme-health-heading p {
+    max-width: 520px;
+  }
+
+  .scheme-health-chart-wrapper {
+    max-width: 400px;
+    margin-inline: auto;
+  }
+
+  .scheme-health-legend {
+    max-width: 600px;
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .scheme-health-card {
+    padding: 14px;
+  }
+
+  .scheme-health-heading {
+    flex-direction: column;
+  }
+
+  .scheme-health-chart-wrapper {
+    height: 215px;
+  }
+}
+
+@media (max-width: 420px) {
+  .scheme-health-legend {
+    grid-template-columns: 1fr;
+  }
+
+  .scheme-health-chart-wrapper {
+    height: 205px;
+  }
+}
+
+/* =========================================================
+   Scheme-wise fund utilisation
+   ========================================================= */
+
+@media (max-width: 1050px) {
+  .fund-utilisation-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .fund-utilisation-card {
+    padding: 14px;
+  }
+
+  .fund-utilisation-heading {
+    gap: 12px;
+  }
+
+  .fund-utilisation-item-heading {
+    flex-direction: column;
+  }
+
+  .fund-utilisation-result {
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+  }
+
+  .fund-utilisation-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .fund-utilisation-legend {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .fund-utilisation-heading-icon {
+    display: none;
+  }
+
+  .fund-scheme-details strong {
+    white-space: normal;
+  }
+}
+
+/* =========================================================
+   Alerts and dashboard operations
+   ========================================================= */
+
+@media (max-width: 1180px) {
+  .dashboard-operations-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .monitoring-alert-list {
+    max-height: 390px;
+  }
+}
+
+@media (max-width: 700px) {
+  .alerts-panel-card {
+    padding: 14px;
+  }
+
+  .alerts-panel-heading {
+    flex-direction: column;
+  }
+
+  .alerts-heading-summary {
+    align-self: flex-start;
+  }
+
+  .monitoring-alert-list {
+    max-height: 420px;
+    min-height: 0;
+  }
+
+  .monitoring-alert-title-row {
+    flex-direction: column;
+  }
+
+  .monitoring-alert-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 420px) {
+  .monitoring-alert-item {
+    padding: 10px;
+  }
+
+  .monitoring-alert-icon {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* =========================================================
+   Floating support
+   ========================================================= */
+
+@media (max-width: 700px) {
+  .floating-support {
+    right: 14px;
+    bottom: 14px;
+  }
+
+  .floating-support-button {
+    min-width: 0;
+    min-height: 50px;
+    padding: 6px;
+    border-radius: 14px;
+  }
+
+  .floating-support-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+  }
+
+  .floating-support-copy {
+    display: none;
+  }
+
+  .dashboard-main {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .sidebar-wrapper {
+    width: 0;
+    height: 0;
+    transform: none;
+  }
+
+  .sidebar-overlay {
+    display: none;
+  }
+}
+
+@media print {
+  .floating-support {
+    display: none !important;
   }
 }
