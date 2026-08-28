@@ -258,7 +258,7 @@ function DashboardPage() {
           <h1>Integrated MIS Dashboard</h1>
 
           <p>
-            Punjab social welfare scheme monitoring,
+            Dehli women and child social welfare scheme monitoring,
             beneficiary services and DBT management
           </p>
         </div>

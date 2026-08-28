@@ -2655,3 +2655,146 @@
   background: transparent;
   border: 0;
 }
+
+/* =========================================================
+   Dark dashboard header theme
+   ========================================================= */
+
+.dashboard-header {
+  color: #ffffff;
+  background: linear-gradient(
+    120deg,
+    #122b59 0%,
+    #173f7a 52%,
+    #4c2b87 100%
+  );
+  border-bottom: 1px solid
+    rgba(255, 255, 255, 0.14);
+  box-shadow: 0 5px 20px
+    rgba(16, 24, 40, 0.16);
+  backdrop-filter: blur(12px);
+}
+
+.header-title strong {
+  color: #ffffff;
+}
+
+.header-title span {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* Date control */
+
+.current-date {
+  color: rgba(255, 255, 255, 0.92);
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.1
+  );
+  border-color: rgba(
+    255,
+    255,
+    255,
+    0.2
+  );
+}
+
+.current-date svg {
+  color: #93c5fd;
+}
+
+/* Notification button */
+
+.notification-button {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.notification-button:hover {
+  color: #ffffff;
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.12
+  );
+}
+
+.notification-button span {
+  color: #ffffff;
+  background-color: #f04438;
+  border-color: #173f7a;
+}
+
+/* Administrator profile */
+
+.admin-profile {
+  color: #ffffff;
+  border-left-color: rgba(
+    255,
+    255,
+    255,
+    0.18
+  );
+}
+
+.admin-profile:hover {
+  color: #ffffff;
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.1
+  );
+}
+
+.admin-avatar {
+  color: #173f7a;
+  background-color: #ffffff;
+  border: 2px solid
+    rgba(255, 255, 255, 0.24);
+}
+
+.admin-details strong {
+  color: #ffffff;
+}
+
+.admin-details span {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.admin-profile > svg {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+/* Mobile menu button */
+
+.mobile-menu-button {
+  color: #ffffff;
+}
+
+.mobile-menu-button:hover {
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.12
+  );
+}
+
+/* Keep the profile dropdown light */
+
+.admin-profile-menu {
+  color: #172033;
+  background-color: #ffffff;
+  border-color: #e4e7ec;
+}
+
+.profile-menu-identity strong {
+  color: #101828;
+}
+
+.profile-menu-identity span {
+  color: #667085;
+}
