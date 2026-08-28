@@ -4,28 +4,67 @@ const sum = (records, selector) => {
   }, 0);
 };
 
-export const filterDashboardRecords = (records, filters) => {
-  const { financialYear, district, scheme } = filters;
+const schemeBeneficiaryCategories = {
+  "Delhi Lakshmi Yojana": "Women",
+  "Delhi Lakhpati Bitiya Scheme": "Girl Child",
+  "Delhi Ladli Scheme": "Girl Child",
+  "Pradhan Mantri Matru Vandana Yojana (PMMVY)":
+    "Mothers",
+  "Delhi Pension Scheme to Women in Distress":
+    "Women",
+  "Widow's Daughter Marriage Scheme": "Women",
+  "Saksham Anganwadi and Poshan 2.0":
+    "Children and Adolescents",
+};
 
-  return records.filter((record) => {
-    const matchesFinancialYear =
-      financialYear === "All Financial Years" ||
-      record.financialYear === financialYear;
+const enrichDashboardRecord = (record) => {
+  return {
+    ...record,
+    beneficiaryCategory:
+      schemeBeneficiaryCategories[record.scheme] ||
+      "Other",
+  };
+};
 
-    const matchesDistrict =
-      district === "All Districts" ||
-      record.district === district;
+export const filterDashboardRecords = (
+  records,
+  filters
+) => {
+  const {
+    financialYear,
+    district,
+    scheme,
+    beneficiaryCategory,
+  } = filters;
 
-    const matchesScheme =
-      scheme === "All Schemes" ||
-      record.scheme === scheme;
+  return records
+    .map(enrichDashboardRecord)
+    .filter((record) => {
+      const matchesFinancialYear =
+        financialYear === "All Financial Years" ||
+        record.financialYear === financialYear;
 
-    return (
-      matchesFinancialYear &&
-      matchesDistrict &&
-      matchesScheme
-    );
-  });
+      const matchesDistrict =
+        district === "All Districts" ||
+        record.district === district;
+
+      const matchesScheme =
+        scheme === "All Schemes" ||
+        record.scheme === scheme;
+
+      const matchesBeneficiaryCategory =
+        beneficiaryCategory ===
+          "All Categories" ||
+        record.beneficiaryCategory ===
+          beneficiaryCategory;
+
+      return (
+        matchesFinancialYear &&
+        matchesDistrict &&
+        matchesScheme &&
+        matchesBeneficiaryCategory
+      );
+    });
 };
 
 export const calculateKpis = (records) => {
@@ -41,7 +80,8 @@ export const calculateKpis = (records) => {
 
   const approvedApplications = sum(
     records,
-    (record) => record.applicationStatus.approved
+    (record) =>
+      record.applicationStatus.approved
   );
 
   const totalAmountSanctioned = sum(
@@ -69,60 +109,72 @@ export const calculateKpis = (records) => {
   };
 };
 
-export const calculateApplicationStatus = (records) => {
+export const calculateApplicationStatus = (
+  records
+) => {
   return [
     {
       name: "Received",
       value: sum(
         records,
-        (record) => record.applicationStatus.received
+        (record) =>
+          record.applicationStatus.received
       ),
     },
     {
       name: "Under Verification",
       value: sum(
         records,
-        (record) => record.applicationStatus.underVerification
+        (record) =>
+          record.applicationStatus
+            .underVerification
       ),
     },
     {
       name: "Approved",
       value: sum(
         records,
-        (record) => record.applicationStatus.approved
+        (record) =>
+          record.applicationStatus.approved
       ),
     },
     {
       name: "Sanctioned",
       value: sum(
         records,
-        (record) => record.applicationStatus.sanctioned
+        (record) =>
+          record.applicationStatus.sanctioned
       ),
     },
     {
       name: "Rejected",
       value: sum(
         records,
-        (record) => record.applicationStatus.rejected
+        (record) =>
+          record.applicationStatus.rejected
       ),
     },
     {
       name: "Disbursed",
       value: sum(
         records,
-        (record) => record.applicationStatus.disbursed
+        (record) =>
+          record.applicationStatus.disbursed
       ),
     },
   ];
 };
 
-export const calculatePaymentStatus = (records) => {
+export const calculatePaymentStatus = (
+  records
+) => {
   return [
     {
       name: "Successful",
       value: sum(
         records,
-        (record) => record.paymentStatus.successful
+        (record) =>
+          record.paymentStatus.successful
       ),
     },
     {
@@ -136,20 +188,26 @@ export const calculatePaymentStatus = (records) => {
       name: "Pending",
       value: sum(
         records,
-        (record) => record.paymentStatus.pending
+        (record) =>
+          record.paymentStatus.pending
       ),
     },
   ];
 };
 
-export const calculateTopSchemes = (records) => {
-  const schemeTotals = records.reduce((totals, record) => {
-    totals[record.scheme] =
-      (totals[record.scheme] || 0) +
-      record.beneficiaries;
+export const calculateTopSchemes = (
+  records
+) => {
+  const schemeTotals = records.reduce(
+    (totals, record) => {
+      totals[record.scheme] =
+        (totals[record.scheme] || 0) +
+        record.beneficiaries;
 
-    return totals;
-  }, {});
+      return totals;
+    },
+    {}
+  );
 
   return Object.entries(schemeTotals)
     .map(([name, beneficiaries]) => ({
@@ -157,12 +215,17 @@ export const calculateTopSchemes = (records) => {
       beneficiaries,
     }))
     .sort((first, second) => {
-      return second.beneficiaries - first.beneficiaries;
+      return (
+        second.beneficiaries -
+        first.beneficiaries
+      );
     })
     .slice(0, 5);
 };
 
-export const calculateGrievances = (records) => {
+export const calculateGrievances = (
+  records
+) => {
   const total = sum(
     records,
     (record) => record.grievances.total
@@ -175,7 +238,8 @@ export const calculateGrievances = (records) => {
 
   const inProgress = sum(
     records,
-    (record) => record.grievances.inProgress
+    (record) =>
+      record.grievances.inProgress
   );
 
   const resolved = sum(
@@ -184,9 +248,7 @@ export const calculateGrievances = (records) => {
   );
 
   const resolutionRate =
-    total > 0
-      ? (resolved / total) * 100
-      : 0;
+    total > 0 ? (resolved / total) * 100 : 0;
 
   return {
     total,
@@ -197,15 +259,19 @@ export const calculateGrievances = (records) => {
   };
 };
 
-export const calculateTransactionFlow = (records) => {
+export const calculateTransactionFlow = (
+  records
+) => {
   const initiated = sum(
     records,
-    (record) => record.applicationStatus.disbursed
+    (record) =>
+      record.applicationStatus.disbursed
   );
 
   const successful = sum(
     records,
-    (record) => record.paymentStatus.successful
+    (record) =>
+      record.paymentStatus.successful
   );
 
   const failed = sum(
@@ -215,7 +281,8 @@ export const calculateTransactionFlow = (records) => {
 
   const pending = sum(
     records,
-    (record) => record.paymentStatus.pending
+    (record) =>
+      record.paymentStatus.pending
   );
 
   const successRate =
@@ -236,10 +303,8 @@ export const calculateDashboardData = (
   records,
   filters
 ) => {
-  const filteredRecords = filterDashboardRecords(
-    records,
-    filters
-  );
+  const filteredRecords =
+    filterDashboardRecords(records, filters);
 
   return {
     filteredRecords,
@@ -249,10 +314,14 @@ export const calculateDashboardData = (
     kpis: calculateKpis(filteredRecords),
 
     applicationStatus:
-      calculateApplicationStatus(filteredRecords),
+      calculateApplicationStatus(
+        filteredRecords
+      ),
 
     paymentStatus:
-      calculatePaymentStatus(filteredRecords),
+      calculatePaymentStatus(
+        filteredRecords
+      ),
 
     topSchemes:
       calculateTopSchemes(filteredRecords),
@@ -261,6 +330,8 @@ export const calculateDashboardData = (
       calculateGrievances(filteredRecords),
 
     transactionFlow:
-      calculateTransactionFlow(filteredRecords),
+      calculateTransactionFlow(
+        filteredRecords
+      ),
   };
 };
