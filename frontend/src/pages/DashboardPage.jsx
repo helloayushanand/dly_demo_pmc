@@ -9,15 +9,15 @@ import {
   WalletCards,
 } from "lucide-react";
 
-import AlertsPanel from "../components/dashboard/AlertsPanel";
-import FundUtilisation from "../components/dashboard/FundUtilisation";
-import SchemeHealthChart from "../components/charts/SchemeHealthChart";
-
 import ApplicationStatusChart from "../components/charts/ApplicationStatusChart";
 import DbtDisbursementTrend from "../components/charts/DbtDisbursementTrend";
 import PaymentOverviewChart from "../components/charts/PaymentOverviewChart";
+import SchemeHealthChart from "../components/charts/SchemeHealthChart";
 import TopSchemesChart from "../components/charts/TopSchemesChart";
+
+import AlertsPanel from "../components/dashboard/AlertsPanel";
 import DashboardFilters from "../components/dashboard/DashboardFilters";
+import FundUtilisation from "../components/dashboard/FundUtilisation";
 import GrievanceOverview from "../components/dashboard/GrievanceOverview";
 import KpiCard from "../components/dashboard/KpiCard";
 import TransactionFlow from "../components/dashboard/TransactionFlow";
@@ -120,9 +120,9 @@ const downloadTextFile = (
 };
 
 function DashboardPage() {
-  const [filters, setFilters] = useState(
-    DEFAULT_FILTERS
-  );
+  const [filters, setFilters] = useState({
+    ...DEFAULT_FILTERS,
+  });
 
   const [isTableMode, setIsTableMode] =
     useState(false);
@@ -149,15 +149,36 @@ function DashboardPage() {
     );
   }, [filters]);
 
-  const handleFilterChange = (
-    filterName,
-    value
-  ) => {
+  /*
+   * The square brackets are essential.
+   * They update the filter whose name was passed,
+   * such as scheme, district, or financialYear.
+   */
+  const handleFilterChange = (filterName, newValue) => {
+    setFilters((currentFilters) => {
+      const updatedFilters = {
+        ...currentFilters,
+      };
+
+      updatedFilters[filterName] = newValue;
+
+      return updatedFilters;
+    });
+  };
+
+  const handleDistrictSelect = (district) => {
     setFilters((currentFilters) => {
       return {
         ...currentFilters,
-        value,
+        district,
       };
+    });
+
+    window.requestAnimationFrame(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     });
   };
 
@@ -258,8 +279,9 @@ function DashboardPage() {
           <h1>Integrated MIS Dashboard</h1>
 
           <p>
-            Dehli women and child social welfare scheme monitoring,
-            beneficiary services and DBT management
+            Delhi women and child welfare scheme
+            monitoring, beneficiary services and DBT
+            management
           </p>
         </div>
 
@@ -348,11 +370,17 @@ function DashboardPage() {
                       Financial Year
                     </th>
 
-                    <th scope="col">District</th>
+                    <th scope="col">
+                      District
+                    </th>
 
-                    <th scope="col">Scheme</th>
+                    <th scope="col">
+                      Scheme
+                    </th>
 
-                    <th scope="col">Category</th>
+                    <th scope="col">
+                      Category
+                    </th>
 
                     <th scope="col">
                       Beneficiaries
@@ -362,7 +390,9 @@ function DashboardPage() {
                       Applications
                     </th>
 
-                    <th scope="col">Approved</th>
+                    <th scope="col">
+                      Approved
+                    </th>
 
                     <th scope="col">
                       Sanctioned Amount
@@ -441,35 +471,45 @@ function DashboardPage() {
           </section>
         ) : (
           <>
-          <section className="dashboard-monitoring-grid">
-            <DbtDisbursementTrend
-              data={dashboardData.dbtTrend}
-              financialYear={filters.financialYear}
-              dateRange={filters.dateRange}
-            />
+            <section className="dashboard-monitoring-grid">
+              <DbtDisbursementTrend
+                data={dashboardData.dbtTrend}
+                financialYear={
+                  filters.financialYear
+                }
+                dateRange={filters.dateRange}
+              />
 
-            <SchemeHealthChart
-              data={dashboardData.schemeHealth.statusData}
-              totalSchemes={
-                dashboardData.schemeHealth.totalSchemes
-              }
-            />
-          </section>
+              <SchemeHealthChart
+                data={
+                  dashboardData.schemeHealth
+                    .statusData
+                }
+                totalSchemes={
+                  dashboardData.schemeHealth
+                    .totalSchemes
+                }
+              />
+            </section>
 
-          <section className="dashboard-operations-grid">
-            <AlertsPanel
-              alerts={dashboardData.alerts.alerts}
-              criticalAlertCount={
-                dashboardData.alerts.criticalAlertCount
-              }
-            />
+            <section className="dashboard-operations-grid">
+              <AlertsPanel
+                alerts={
+                  dashboardData.alerts.alerts
+                }
+                criticalAlertCount={
+                  dashboardData.alerts
+                    .criticalAlertCount
+                }
+              />
 
-            <FundUtilisation
-              data={dashboardData.fundUtilisation}
-            />
-          </section>
+              <FundUtilisation
+                data={
+                  dashboardData.fundUtilisation
+                }
+              />
+            </section>
 
-          <section className="primary-chart-grid"></section>
 
             <section className="primary-chart-grid">
               <ApplicationStatusChart
